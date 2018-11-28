@@ -1,0 +1,23 @@
+{
+  "name": "pokemon-agents",
+  "version": "0.0.1",
+  "description": "A collection of Pokémon battle agents",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/pokeml/pokemon-agents.git"
+  },
+  "author": "",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/pokeml/pokemon-agents/issues"
+  },
+  "homepage": "https://github.com/pokeml/pokemon-agents#readme",
+  "dependencies": {},
+  "devDependencies": {
+    "eslint": "^5.9.0",
+    "eslint-config-google": "^0.11.0"
+  }
+}
