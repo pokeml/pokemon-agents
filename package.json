@@ -16,7 +16,10 @@
     "url": "https://github.com/pokeml/pokemon-agents/issues"
   },
   "homepage": "https://github.com/pokeml/pokemon-agents#readme",
-  "dependencies": {},
+  "dependencies": {
+    "pokemon-env": "file:../pokemon-env",
+    "underscore": "^1.9.1"
+  },
   "devDependencies": {
     "eslint": "^5.9.0",
     "eslint-config-google": "^0.11.0"
