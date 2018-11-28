@@ -3,6 +3,7 @@
   "version": "0.0.1",
   "description": "A collection of Pokémon battle agents",
   "scripts": {
+    "lint": "eslint .",
     "test": "echo \"Error: no test specified\" && exit 1"
   },
   "repository": {
