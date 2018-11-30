@@ -16,9 +16,14 @@ class SmartAgent extends Agent {
      */
     constructor(id, debug = false) {
         super();
+
         this.id = id;
         this.debug = debug;
-        this._battle = new Battle();
+
+        this._request = /** @type {Request} */ null;
+        this._battle = /** @type {Battle} */ null;
+
+        this.reset();
     }
 
     /**
@@ -52,11 +57,11 @@ class SmartAgent extends Agent {
     }
 
     /**
-     * Update the agent's battle state.
+     * Update the agent's state.
      *
      * @param {string} observation
      */
-    _updateState(observation) {
+    update(observation) {
         for (const line of observation.split('\n')) {
             if (this.debug) {
                 console.log(`${line}`.gray);
@@ -67,6 +72,8 @@ class SmartAgent extends Agent {
             /* eslint-disable-next-line max-len */
             if (cmd === 'error' && rest !== `[Invalid choice] Can't switch: The active Pokémon is trapped`) {
                 throw new Error(rest);
+            } else if (cmd === 'request') {
+                this._request = JSON.parse(rest);
             }
             this._battle.activityQueue.push(line);
         }
@@ -81,14 +88,22 @@ class SmartAgent extends Agent {
             this._battle.destroy();
         }
         this._battle = new Battle();
-    }
-
-    /**
-     * @override
-     */
-    act(actionSpace, observation, reward, done) {
-        this._updateState(observation);
-        return _.sample(actionSpace);
+        this._battle.customCallback = (battle, type, args, kwargs) => {
+            switch (type) {
+            case 'trapped':
+                this._request.active[0].trapped = true;
+                break;
+            case 'cant':
+                const moves = this._request.active[0].moves;
+                for (let i = 0; i < moves.length; i++) {
+                    if (moves[i].id === args[3]) {
+                        moves[i].disabled = true;
+                    }
+                }
+                break;
+            }
+        };
+        this._request = null;
     }
 }
 

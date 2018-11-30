@@ -5,7 +5,7 @@ const util = require('util');
 
 const PokemonEnv = require('pokemon-env');
 const RandomAgent = require('../src/agents/random-agent');
-const SmartAgent = require('../src/base/smart-agent');
+const SimpleAgent = require('../src/agents/simple-agent');
 const teams = require('../data/teams');
 
 // config
@@ -17,17 +17,17 @@ const config = {
     'logP2State': false,
     'stateDisplay': {
         'showHidden': false,
-        'depth': 2,
+        'depth': 3,
         'colors': true,
     },
 };
 
 // parameters
-const numEpisodes = 100;
+const numEpisodes = 10;
 const maxSteps = 1000;
 
 // agents
-const p1Agent = new SmartAgent();
+const p1Agent = new SimpleAgent();
 const p2Agent = new RandomAgent();
 
 // player specs

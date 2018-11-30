@@ -1,7 +1,7 @@
 'use strict';
 
 const seedrandom = require('seedrandom');
-const Agent = require('../base/agent');
+const Agent = require('../core/agent');
 
 /**
  * An agent that chooses actions uniformly at random.
