@@ -17,7 +17,7 @@
   },
   "homepage": "https://github.com/pokeml/pokemon-agents#readme",
   "dependencies": {
-    "pokemon-env": "^0.0.4",
+    "pokemon-env": "^0.2.3",
     "seedrandom": "^2.4.4",
     "underscore": "^1.9.1"
   },
