@@ -53,6 +53,8 @@ class SmartAgent extends Agent {
         state.yourSide.active = this._battle.yourSide.active.map(omitPokemonKeys);
         state.yourSide.pokemon = this._battle.yourSide.pokemon.map(omitPokemonKeys);
 
+        state.request = this._request;
+
         return state;
     }
 
