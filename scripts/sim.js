@@ -8,7 +8,7 @@ const util = require('util');
 const PokemonEnv = require('pokemon-env');
 const RandomAgent = require('../src/agents/random-agent');
 const SemiRandomAgent = require('../src/agents/semi-random-agent');
-const SimpleAgent = require('../src/agents/random-agent');
+const TestAgent = require('../src/agents/test-agent');
 const teams = require('../data/teams');
 
 // config
@@ -16,29 +16,29 @@ const config = {
     'logEpisodes': true,
     'logTime': true,
     'logObservations': false,
-    'logP1State': false,
+    'logP1State': true,
     'logP2State': false,
     'stateDisplay': {
         'showHidden': false,
-        'depth': 4,
+        'depth': 6,
         'colors': true,
     },
 };
 
 // parameters
-const numEpisodes = 100;
+const numEpisodes = 1;
 const maxSteps = 1000;
 
 // agents
-const p1Agent = new SemiRandomAgent();
-const p2Agent = new RandomAgent();
+const p1Agent = new TestAgent();
+const p2Agent = new SemiRandomAgent();
 
 // player specs
-const p1Spec = {name: 'Player 1', team: teams[0]};
-const p2Spec = {name: 'Player 2', team: teams[1]};
+const p1Spec = {name: 'Player 1', team: teams['gen7ou'][0]};
+const p2Spec = {name: 'Player 2', team: teams['gen7ou'][1]};
 
 // init environment
-const env = new PokemonEnv('gen7randombattle', p1Spec, p2Spec);
+const env = new PokemonEnv('gen7ou', p1Spec, p2Spec);
 
 const results = {
     'p1Wins': 0,
@@ -58,9 +58,15 @@ for (let episode = 1; episode <= numEpisodes; episode++) {
 
     // logging
     console.clear();
-    if (config.logEpisodes) console.log(`Episode ${episode}`);
-    if (config.logTime) console.log('Time: 0');
-    if (config.logObservations) console.log(`${observations[0]}`.gray);
+    if (config.logEpisodes) {
+        console.log(`Episode ${episode}`);
+    }
+    if (config.logTime) {
+        console.log('Time: 0');
+    }
+    if (config.logObservations) {
+        console.log(`${observations[0]}`.gray);
+    }
 
     for (let t = 1; t <= maxSteps; t++) {
         // choose actions
@@ -69,6 +75,7 @@ for (let episode = 1; episode <= numEpisodes; episode++) {
             p2Agent.act(env.actionSpace[1], observations[1], rewards[1], done),
         ];
 
+        // log p1 action space and action
         // console.log(env.actionSpace[0]);
         // console.log('>> ', actions[0]);
 
@@ -76,8 +83,12 @@ for (let episode = 1; episode <= numEpisodes; episode++) {
         ({observations, rewards, done} = env.step(actions));
 
         // logging
-        if (config.logTime) console.log(`Time: ${t}`);
-        if (config.logObservations) console.log(`${observations[0]}`.gray);
+        if (config.logTime) {
+            console.log(`Time: ${t}`);
+        }
+        if (config.logObservations) {
+            console.log(`${observations[0]}`.gray);
+        }
         if (config.logP1State) {
             console.log(util.inspect(p1Agent.state, config.stateDisplay));
         }
