@@ -9,7 +9,7 @@ const splitFirst = require('../../utils/utils').splitFirst;
 /**
  * An agent that can keep track of the battle state from its observations.
  */
-class SmartAgent extends Agent {
+class TrackingAgent extends Agent {
     /**
      * @param {'p1' | 'p2'} id
      * @param {boolean} [debug]
@@ -27,11 +27,36 @@ class SmartAgent extends Agent {
     }
 
     /**
+     * Update the agent's state.
+     *
+     * @param {string} observation
+     */
+    update(observation) {
+        for (const line of observation.split('\n')) {
+            if (this.debug) {
+                console.log(`${line}`.gray);
+            }
+            if (line.charAt(0) !== '|') return;
+            const [cmd, rest] = splitFirst(line.slice(1), '|');
+            // invalid choices can happen despite normal behavior, e.g. if a Pokémon is trapped
+            const ignoredErrors = [`[Invalid choice] Can't switch: The active Pokémon is trapped`];
+            if (cmd === 'error' && !(rest in ignoredErrors)) {
+                throw new Error(rest);
+            } else if (cmd === 'request') {
+                this._request = JSON.parse(rest);
+            }
+            this._battle.activityQueue.push(line);
+        }
+        this._battle.update();
+    }
+
+    /**
      * Get the current agent state.
      *
      * @return {Object}
      */
     get state() {
+        // pick useful properties of battle state
         const battleKeys = [
             'turn', 'weather', 'pseudoWeather', 'weatherTimeLeft', 'weatherMinTimeLeft', 'lastMove',
             'gen', 'teamPreviewCount', 'speciesClause', 'tier', 'gameType', 'endLastTurnPending',
@@ -53,33 +78,25 @@ class SmartAgent extends Agent {
         state.yourSide.active = this._battle.yourSide.active.map(omitPokemonKeys);
         state.yourSide.pokemon = this._battle.yourSide.pokemon.map(omitPokemonKeys);
 
+        // add info from request object
+        // if (this._request.active) {
+        //     state.mySide.active[0].moves = this._request.active[0];
+        // }
+        // const pokemonKeys = [
+        //     'condition', 'active', 'stats', 'moves', 'item', 'baseAbility', 'ability',
+        // ];
+        // for (const pokemon of state.mySide.pokemon) {
+        //     for (const p of this._request.side.pokemon) {
+        //         if (pokemon.ident === p.ident) {
+        //             for (const key of pokemonKeys) {
+        //                 pokemon[key] = p[key];
+        //             }
+        //         }
+        //     }
+        // }
         state.request = this._request;
 
         return state;
-    }
-
-    /**
-     * Update the agent's state.
-     *
-     * @param {string} observation
-     */
-    update(observation) {
-        for (const line of observation.split('\n')) {
-            if (this.debug) {
-                console.log(`${line}`.gray);
-            }
-            if (line.charAt(0) !== '|') return;
-            const [cmd, rest] = splitFirst(line.slice(1), '|');
-            // invalid choices can happen despite normal behavior, e.g. if a Pokémon is trapped
-            /* eslint-disable-next-line max-len */
-            if (cmd === 'error' && rest !== `[Invalid choice] Can't switch: The active Pokémon is trapped`) {
-                throw new Error(rest);
-            } else if (cmd === 'request') {
-                this._request = JSON.parse(rest);
-            }
-            this._battle.activityQueue.push(line);
-        }
-        this._battle.update();
     }
 
     /**
@@ -109,4 +126,4 @@ class SmartAgent extends Agent {
     }
 }
 
-module.exports = SmartAgent;
+module.exports = TrackingAgent;
