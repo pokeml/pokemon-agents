@@ -33,15 +33,23 @@ class Encoder {
     }
 
     /**
+     * Get the index of a given entity in a specified dictionary.
+     *
      * @param {string} type
-     * @param {string} item
+     * @param {string} entity
      * @return {Array}
      */
-    encode(type, item) {
-        if (!(type in this.dictIds)) {
+    index(type, entity) {
+        if (type == null || !(type in this.dictIds)) {
             throw new Error(`Invalid type: ${type}`);
         }
-        return null;
+        if (!(type in this.dict)) {
+            throw new Error(`No dictionary for type: ${type}`);
+        }
+        if (entity == null || !(entity in this.dict[type])) {
+            throw new Error(`Invalid entity: ${entity}`);
+        }
+        return this.dict[type][entity];
     }
 }
 
