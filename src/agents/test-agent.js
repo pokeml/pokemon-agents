@@ -62,14 +62,7 @@ class TestAgent extends TrackingAgent {
             ['team', 'pokemon', myPokemon],
             ['moves', 'move', moves],
         ];
-        console.log(this.encoder.encode(features));
-
-        return {
-            'myActive': myActive,
-            'yourActive': yourActive,
-            'myPokemon': myPokemon,
-            'moves': moves,
-        };
+        return this.encoder.encode(features);
     }
 }
 
