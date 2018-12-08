@@ -9,7 +9,7 @@ const splitFirst = require('../../utils/utils').splitFirst;
 /**
  * An agent that can keep track of the battle state from its observations.
  */
-class TrackingAgent extends Agent {
+class BaseAgent extends Agent {
     /**
      * @param {'p1' | 'p2'} id
      * @param {boolean} [debug]
@@ -126,4 +126,4 @@ class TrackingAgent extends Agent {
     }
 }
 
-module.exports = TrackingAgent;
+module.exports = BaseAgent;

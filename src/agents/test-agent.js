@@ -5,7 +5,7 @@
 const _ = require('underscore');
 
 const Encoder = require('../core/encoder');
-const TrackingAgent = require('../core/tracking-agent');
+const BaseAgent = require('../core/base-agent');
 const toId = require('../../utils/utils').toId;
 
 const pokemon = [
@@ -28,7 +28,7 @@ const vocab = {
 /**
  * A test agent.
  */
-class TestAgent extends TrackingAgent {
+class TestAgent extends BaseAgent {
     /**
      *
      */
