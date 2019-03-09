@@ -1,7 +1,5 @@
 'use strict';
 
-const _ = require('underscore');
-
 const Agent = require('./agent');
 const Battle = require('../tracking/battle');
 const splitFirst = require('../../utils/utils').splitFirst;
@@ -109,17 +107,17 @@ class TrackingAgent extends Agent {
         this._battle = new Battle();
         this._battle.customCallback = (battle, type, args, kwargs) => {
             switch (type) {
-            case 'trapped':
-                this._request.active[0].trapped = true;
-                break;
-            case 'cant':
-                const moves = this._request.active[0].moves;
-                for (let i = 0; i < moves.length; i++) {
-                    if (moves[i].id === args[3]) {
-                        moves[i].disabled = true;
+                case 'trapped':
+                    this._request.active[0].trapped = true;
+                    break;
+                case 'cant':
+                    const moves = this._request.active[0].moves;
+                    for (let i = 0; i < moves.length; i++) {
+                        if (moves[i].id === args[3]) {
+                            moves[i].disabled = true;
+                        }
                     }
-                }
-                break;
+                    break;
             }
         };
         this._request = null;

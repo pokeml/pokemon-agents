@@ -1,6 +1,5 @@
 'use strict';
 
-const _ = require('underscore');
 const TrackingAgent = require('../core/tracking-agent');
 const BattleDex = require('../tracking/battle-dex');
 
@@ -8,7 +7,6 @@ const BattleDex = require('../tracking/battle-dex');
  * An agent that chooses actions uniformly at random.
  */
 class MaxBasePowerAgent extends TrackingAgent {
-
     /**
      * @param {'p1' | 'p2'} id
      * @param {object} team

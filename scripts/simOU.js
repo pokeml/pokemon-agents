@@ -11,7 +11,7 @@ const MaxBasePowerAgent = require('../src/agents/max-base-power-agent');
 const SemiRandomAgent = require('../src/agents/semi-random-agent');
 const TestAgent = require('../src/agents/test-agent');
 const teams = require('../data/teams');
-const storage = require('../src/tracking/storage')
+const storage = require('../src/tracking/storage');
 
 // config
 const config = {
@@ -30,7 +30,6 @@ const config = {
 // parameters
 const numEpisodes = 1000;
 const maxSteps = 1000;
-
 
 
 // player specs
