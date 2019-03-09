@@ -124,6 +124,16 @@ class TrackingAgent extends Agent {
         };
         this._request = null;
     }
+
+    /**
+     * @return {Side}
+     */
+    getOwnSide() {
+        if (this.id === 'player1') {
+            return this._battle.p1;
+        }
+        return this._battle.p2;
+    }
 }
 
 module.exports = TrackingAgent;
