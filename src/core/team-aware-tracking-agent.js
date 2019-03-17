@@ -2,6 +2,7 @@
 
 const TrackingAgent = require('../core/tracking-agent');
 const BattleDex = require('../tracking/battle-dex');
+const storage = require('../tracking/storage')
 
 /**
  * An agent that chooses actions uniformly at random.
@@ -14,7 +15,7 @@ class TeamAwareTrackingAgent extends TrackingAgent {
      */
     constructor(id, team, debug = false) {
         super(id, debug);
-        this.team = team;
+        this.unpackedTeam = storage.unpackTeam(team);
     }
 
     /**
@@ -25,11 +26,11 @@ class TeamAwareTrackingAgent extends TrackingAgent {
             return [];
         }
         const activePokemonSpecies = this.getOwnSide().active[0].species;
-        for (let i = 0; i < this.team.length; i++) {
-            if (this.team[i].species == activePokemonSpecies) {
+        for (let i = 0; i < this.unpackedTeam.length; i++) {
+            if (this.unpackedTeam[i].species == activePokemonSpecies) {
                 const moves = [];
-                for (let j = 0; j < this.team[i].moves.length; j++) {
-                    moves[j] = BattleDex.getMove(this.team[i].moves[j]);
+                for (let j = 0; j < this.unpackedTeam[i].moves.length; j++) {
+                    moves[j] = BattleDex.getMove(this.unpackedTeam[i].moves[j]);
                 }
                 return moves;
             }

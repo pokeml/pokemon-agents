@@ -38,7 +38,7 @@ const p2Spec = {name: 'player2', team: teams['gen7ou'][1]};
 
 // agents
 const p1Agent = new SemiRandomAgent();
-const p2Agent = new MaxBasePowerAgent('player2', storage.unpackTeam(teams['gen7ou'][1]), false);
+const p2Agent = new MaxBasePowerAgent('player2', teams['gen7ou'][1], false);
 
 // init environment
 const env = new PokemonEnv('gen7ou', p1Spec, p2Spec);
