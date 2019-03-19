@@ -16,7 +16,9 @@ class TrackingAgent extends Agent {
      */
     constructor(id, debug = false) {
         super();
-
+        if (id !== 'player1' && id !== 'player2') {
+            throw new Error('invalid player id');
+        }
         this.id = id;
         this.debug = debug;
 
