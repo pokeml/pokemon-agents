@@ -2,8 +2,7 @@
 
 const TrackingAgent = require('../core/tracking-agent');
 const BattleDex = require('../tracking/battle-dex');
-const storage = require('../tracking/storage')
-
+const storage = require('../tracking/storage');
 /**
  * An agent that chooses actions uniformly at random.
  */
