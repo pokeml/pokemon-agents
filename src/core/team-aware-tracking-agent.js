@@ -25,7 +25,7 @@ class TeamAwareTrackingAgent extends TrackingAgent {
         if (this.getOwnSide().active[0] == null) {
             return [];
         }
-        const activePokemonSpecies = this.getOwnSide().active[0].species;
+        const activePokemonSpecies = this.getActivePokemonSpecies();
         for (let i = 0; i < this.unpackedTeam.length; i++) {
             if (this.unpackedTeam[i].species == activePokemonSpecies) {
                 const moves = [];
