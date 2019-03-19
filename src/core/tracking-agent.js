@@ -134,6 +134,35 @@ class TrackingAgent extends Agent {
         }
         return this._battle.p2;
     }
+
+    /**
+     * @return {Side}
+     */
+    getOponnentSide() {
+        if (this.id === 'player1') {
+            return this._battle.p2;
+        }
+        return this._battle.p1;
+    }
+
+    /**
+     * @param {bool} own
+     * @return {string}
+     */
+    getActivePokemonSpecies(own = true) {
+        if (own) {
+            const active = this.getOwnSide().active[0];
+            if (active == null) {
+                return '';
+            }
+            return active.species;
+        }
+        const active = this.getOponnentSide().active[0];
+        if (active == null) {
+            return '';
+        }
+        return active.species;
+    }
 }
 
 module.exports = TrackingAgent;
