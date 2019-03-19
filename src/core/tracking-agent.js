@@ -16,7 +16,9 @@ class TrackingAgent extends Agent {
      */
     constructor(id, debug = false) {
         super();
-
+        if (id !== 'player1' && id !== 'player2') {
+            throw new Error('invalid player id');
+        }
         this.id = id;
         this.debug = debug;
 
@@ -133,6 +135,35 @@ class TrackingAgent extends Agent {
             return this._battle.p1;
         }
         return this._battle.p2;
+    }
+
+    /**
+     * @return {Side}
+     */
+    getOponnentSide() {
+        if (this.id === 'player1') {
+            return this._battle.p2;
+        }
+        return this._battle.p1;
+    }
+
+    /**
+     * @param {bool} own
+     * @return {string}
+     */
+    getActivePokemonSpecies(own = true) {
+        if (own) {
+            const active = this.getOwnSide().active[0];
+            if (active == null) {
+                return '';
+            }
+            return active.species;
+        }
+        const active = this.getOponnentSide().active[0];
+        if (active == null) {
+            return '';
+        }
+        return active.species;
     }
 }
 

@@ -6,12 +6,9 @@ require('colors');
 const util = require('util');
 
 const PokemonEnv = require('pokemon-env');
-const RandomAgent = require('../src/agents/random-agent');
-const MaxBasePowerAgent = require('../src/agents/max-base-power-agent');
 const SemiRandomAgent = require('../src/agents/semi-random-agent');
-const TestAgent = require('../src/agents/test-agent');
+const MaxDamageAgent = require('../src/agents/max-damage-agent');
 const teams = require('../data/teams');
-const storage = require('../src/tracking/storage');
 
 // config
 const config = {
@@ -28,17 +25,17 @@ const config = {
 };
 
 // parameters
-const numEpisodes = 1000;
+const numEpisodes = 30;
 const maxSteps = 1000;
 
 
 // player specs
-const p1Spec = {name: 'Player 1', team: teams['gen7ou'][0]};
+const p1Spec = {name: 'player1', team: teams['gen7ou'][0]};
 const p2Spec = {name: 'player2', team: teams['gen7ou'][1]};
 
 // agents
 const p1Agent = new SemiRandomAgent();
-const p2Agent = new MaxBasePowerAgent('player2', storage.unpackTeam(teams['gen7ou'][1]), false);
+const p2Agent = new MaxDamageAgent('player2', teams['gen7ou'][1], teams['gen7ou'][0], 'gen7ou');
 
 // init environment
 const env = new PokemonEnv('gen7ou', p1Spec, p2Spec);
