@@ -140,7 +140,7 @@ class TrackingAgent extends Agent {
     /**
      * @return {Side}
      */
-    getOponnentSide() {
+    getOpponentSide() {
         if (this.id === 'player1') {
             return this._battle.p2;
         }
@@ -151,7 +151,7 @@ class TrackingAgent extends Agent {
      * @param {bool} own
      * @return {string}
      */
-    getActivePokemonSpecies(own = true) {
+    getActivePokemonSpecies(own=true) {
         if (own) {
             const active = this.getOwnSide().active[0];
             if (active == null) {
@@ -159,7 +159,7 @@ class TrackingAgent extends Agent {
             }
             return active.species;
         }
-        const active = this.getOponnentSide().active[0];
+        const active = this.getOpponentSide().active[0];
         if (active == null) {
             return '';
         }
