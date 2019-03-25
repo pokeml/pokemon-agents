@@ -36,14 +36,10 @@ class ChecksSwitchAgent extends TrackingAgent {
     }
 
     /**
-     * Choose an action.
-     *
-     * @param {AnyObject} battle
-     * @param {string[]} actions
-     * @param {AnyObject} info
-     * @return {string}
+     * @override
      */
-    act(battle, actions, info) {
+    act(actionSpace, observation, reward, done) {
+        super.update(observation);
         // TODO: if opponent chose uturn/voltswitch/etc. skip computing
         // determine player and opponent
         console.log('----');
@@ -108,7 +104,7 @@ class ChecksSwitchAgent extends TrackingAgent {
 
         // console.log(`>> ${this.id}: I'm ${this.id}, my opponent is ${opponent}.`);
         console.log(`>> ${this.id}: My active ${myActiveMon} is ${typeOfCheck} `
-          + `to my opponent's active ${oppActiveMon}`);
+            + `to my opponent's active ${oppActiveMon}`);
 
         let action;
         // if it's the first turn (team preview), choose lead and return
@@ -148,6 +144,19 @@ class ChecksSwitchAgent extends TrackingAgent {
 
         return action;
     }
+}
+
+    /**
+     * Choose an action.
+     *
+     * @param {AnyObject} battle
+     * @param {string[]} actions
+     * @param {AnyObject} info
+     * @return {string}
+     */
+    // act(battle, actions, info) {
+    //
+    // }
 
     /**
      * calculates the best switch possible in current turn
