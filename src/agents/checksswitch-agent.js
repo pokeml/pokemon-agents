@@ -69,7 +69,7 @@ class ChecksSwitchAgent extends BattleAgent {
         // get my active mon
         let myActiveMon;
         let oppActiveMon;
-        let myMons = info.side.pokemon;
+        const myMons = info.side.pokemon;
         for (const pokemon of myMons) {
             if (pokemon.active == true) {
                 myActiveMon = this._normName(pokemon.details);
@@ -95,9 +95,9 @@ class ChecksSwitchAgent extends BattleAgent {
         }
 
         // get the current matchup based on checksgraph
-        let xsiactiveMatchup = this._xsilookUpInMatchupMatrix(myActiveMon, oppActiveMon);
+        const xsiactiveMatchup = this._xsilookUpInMatchupMatrix(myActiveMon, oppActiveMon);
         // find the opposing active pokemon on the graph and store its checks and counters
-        let oppMonChecks = checks[oppActiveMon];
+        const oppMonChecks = checks[oppActiveMon];
         // search in lists for the own active pokemon
         let typeOfCheck;
         if (oppMonChecks) {
@@ -105,7 +105,7 @@ class ChecksSwitchAgent extends BattleAgent {
         }
 
         // get the current meatchup based on typesgraph
-        let typesactiveMatchup = this._typeslookUpInMatchupMatrix(myActiveMon, oppActiveMon);
+        const typesactiveMatchup = this._typeslookUpInMatchupMatrix(myActiveMon, oppActiveMon);
 
         // console.log(`>> ${player}: I'm ${player}, my opponent is ${opponent}.`);
         console.log(`>> ${player}: My active ${myActiveMon} is ${typeOfCheck} `
@@ -122,10 +122,10 @@ class ChecksSwitchAgent extends BattleAgent {
         // try to find a pokemon on your team that does better against the current opposing pokemon.
         // if the current pokemon is already the best choice, attack.
         // if there is a pokemon that does better against the current opposing pokemon, switch to it
-        let xsibestSwitch = this._xsiGetBestSwitch(battle, actions, info,
+        const xsibestSwitch = this._xsiGetBestSwitch(battle, actions, info,
             xsiactiveMatchup, myActiveMon, oppActiveMon, player);
         console.log('   --');
-        let typebestSwitch = this._typeGetBestSwitch(battle, actions, info,
+        const typebestSwitch = this._typeGetBestSwitch(battle, actions, info,
             typesactiveMatchup, myActiveMon, oppActiveMon, player);
         if (xsibestSwitch) {
             console.log(`>> ${player}: xsi best switch`);
@@ -134,10 +134,10 @@ class ChecksSwitchAgent extends BattleAgent {
             console.log(xsibestSwitch);
             action = xsibestSwitch;
         } else {
-            let moveIsPossible = this._actionTypePossible(actions, 'move');
+            const moveIsPossible = this._actionTypePossible(actions, 'move');
             if (moveIsPossible) {
                 // only keep MoveActions
-                let stayInActions = actions.filter((e) => (e.type === 'move'));
+                const stayInActions = actions.filter((e) => (e.type === 'move'));
                 // TODO: 1v1
                 action = _.sample(stayInActions);
             } else {
@@ -180,7 +180,7 @@ class ChecksSwitchAgent extends BattleAgent {
         let maxMatchupValue = -2;
         let currentMatchupValue;
         // index of oppMon in MUMatrix
-        let oppMonIndex = this._oppMonsKeys[oppActiveMon];
+        const oppMonIndex = this._oppMonsKeys[oppActiveMon];
         // let switchToName;
         let switchToNameBest;
         let switchToNameBestOld;
@@ -214,10 +214,10 @@ class ChecksSwitchAgent extends BattleAgent {
             // don't switch, a best check already active
             console.log(`>> ${player}(GBS): A best check already active`);
             // if no moveactions possible, recommend switch anyway with a best switch
-            let moveIsPossible = this._actionTypePossible(actions, 'move');
+            const moveIsPossible = this._actionTypePossible(actions, 'move');
             if (!moveIsPossible) {
                 console.log(`>> ${player}(GBS): No move is possible, recommend switch anyway.`);
-                let switchIsPossible = this._actionTypePossible(actions, 'switch');
+                const switchIsPossible = this._actionTypePossible(actions, 'switch');
                 if (switchIsPossible) {
                     console.log(`>> ${player}(GBS): Switching is possible`);
                     // if only one choice in switching then no need to continue
@@ -228,7 +228,7 @@ class ChecksSwitchAgent extends BattleAgent {
                     }
                     // TODO: find out when switchactions can not be found in actions
                     // returnAction = _.sample(actions);
-                    let indexInOwnTeam = this._getIndexInOwnTeam(switchToNameBest, info);
+                    const indexInOwnTeam = this._getIndexInOwnTeam(switchToNameBest, info);
                     // search for correct switch action in actions object
                     for (const act of actions) {
                         if ((act.type === 'switch') && (act.pokeNum == (indexInOwnTeam))) {
@@ -245,7 +245,7 @@ class ChecksSwitchAgent extends BattleAgent {
         } else {
             // better check found than active, switch to switchToName
             console.log(`>> ${player}(GBS): switching to ${switchToNameBest}`);
-            let switchIsPossible = this._actionTypePossible(actions, 'switch');
+            const switchIsPossible = this._actionTypePossible(actions, 'switch');
             if (switchIsPossible) {
                 console.log(`>> ${player}(GBS): Switching is possible`);
                 // if only one choice in switching then no need to continue
@@ -256,7 +256,7 @@ class ChecksSwitchAgent extends BattleAgent {
                 }
                 // TODO: find out when switchactions can not be found in actions
                 // returnAction = _.sample(actions);
-                let indexInOwnTeam = this._getIndexInOwnTeam(switchToNameBest, info);
+                const indexInOwnTeam = this._getIndexInOwnTeam(switchToNameBest, info);
                 // search for correct switch action in actions object
                 for (const act of actions) {
                     if ((act.type === 'switch') && (act.pokeNum == (indexInOwnTeam))) {
@@ -297,7 +297,7 @@ class ChecksSwitchAgent extends BattleAgent {
         let maxMatchupValue = -2;
         let currentMatchupValue;
         // index of oppMon in MUMatrix
-        let oppMonIndex = this._oppMonsKeys[oppActiveMon];
+        const oppMonIndex = this._oppMonsKeys[oppActiveMon];
         // let switchToName;
         let switchToNameBest;
         let switchToNameBestOld;
@@ -331,10 +331,10 @@ class ChecksSwitchAgent extends BattleAgent {
             // don't switch, a best check already active
             console.log(`>> ${player}(TBS): A best check already active`);
             // if no moveactions possible, recommend switch anyway with a best switch
-            let moveIsPossible = this._actionTypePossible(actions, 'move');
+            const moveIsPossible = this._actionTypePossible(actions, 'move');
             if (!moveIsPossible) {
                 console.log(`>> ${player}(TBS): No move is possible, recommend switch anyway.`);
-                let switchIsPossible = this._actionTypePossible(actions, 'switch');
+                const switchIsPossible = this._actionTypePossible(actions, 'switch');
                 if (switchIsPossible) {
                     console.log(`>> ${player}(TBS): Switching is possible`);
                     // if only one choice in switching then no need to continue
@@ -345,7 +345,7 @@ class ChecksSwitchAgent extends BattleAgent {
                     }
                     // TODO: find out when switchactions can not be found in actions
                     // returnAction = _.sample(actions);
-                    let indexInOwnTeam = this._getIndexInOwnTeam(switchToNameBest, info);
+                    const indexInOwnTeam = this._getIndexInOwnTeam(switchToNameBest, info);
                     // search for correct switch action in actions object
                     for (const act of actions) {
                         if ((act.type === 'switch') && (act.pokeNum == (indexInOwnTeam))) {
@@ -362,7 +362,7 @@ class ChecksSwitchAgent extends BattleAgent {
         } else {
             // better check found than active, switch to switchToName
             console.log(`>> ${player}(TBS): switching to ${switchToNameBest}`);
-            let switchIsPossible = this._actionTypePossible(actions, 'switch');
+            const switchIsPossible = this._actionTypePossible(actions, 'switch');
             if (switchIsPossible) {
                 console.log(`>> ${player}(TBS): Switching is possible`);
                 // if only one choice in switching then no need to continue
@@ -373,7 +373,7 @@ class ChecksSwitchAgent extends BattleAgent {
                 }
                 // TODO: find out when switchactions can not be found in actions
                 // returnAction = _.sample(actions);
-                let indexInOwnTeam = this._getIndexInOwnTeam(switchToNameBest, info);
+                const indexInOwnTeam = this._getIndexInOwnTeam(switchToNameBest, info);
                 // search for correct switch action in actions object
                 for (const act of actions) {
                     if ((act.type === 'switch') && (act.pokeNum == (indexInOwnTeam))) {
@@ -564,9 +564,7 @@ class ChecksSwitchAgent extends BattleAgent {
      * @return {float}
      */
     _xsilookUpInMatchupMatrix(myMon, oppMon) {
-        let matchupValue;
-        matchupValue = this._xsiMatchupMatrix[this._myMonsKeys[myMon]][this._oppMonsKeys[oppMon]];
-        return matchupValue;
+        return this._xsiMatchupMatrix[this._myMonsKeys[myMon]][this._oppMonsKeys[oppMon]];
     }
 
     /**
@@ -577,9 +575,7 @@ class ChecksSwitchAgent extends BattleAgent {
      * @return {float}
      */
     _typeslookUpInMatchupMatrix(myMon, oppMon) {
-        let matchupValue;
-        matchupValue = this._typesMatchupMatrix[this._myMonsKeys[myMon]][this._oppMonsKeys[oppMon]];
-        return matchupValue;
+        return this._typesMatchupMatrix[this._myMonsKeys[myMon]][this._oppMonsKeys[oppMon]];
     }
 
     /**
@@ -674,7 +670,7 @@ class ChecksSwitchAgent extends BattleAgent {
     _xsiMatchupValue(pokemonWithList, pokemonInList) {
         let matchupValue;
         let xsiIndex;
-        let xsiLists = checks[pokemonWithList];
+        const xsiLists = checks[pokemonWithList];
 
         if (xsiLists) {
             // check in gsi
@@ -804,7 +800,7 @@ class ChecksSwitchAgent extends BattleAgent {
             console.log(`>> ${player}: Stay in.`);
             // stay in, remove all switch options from actions
             // check if moveactions available
-            let moveIsPossible = this._actionTypePossible(actions, 'move');
+            const moveIsPossible = this._actionTypePossible(actions, 'move');
 
             if (moveIsPossible) {
                 // only keep MoveActions
@@ -821,7 +817,7 @@ class ChecksSwitchAgent extends BattleAgent {
             // in this case the goal is to switch into a gsi, if not found stay in
             console.log(`>> ${player}: Search gsi`);
             // check if switch action is possible
-            let switchIsPossibleSsi = this._actionTypePossible(actions, 'switch');
+            const switchIsPossibleSsi = this._actionTypePossible(actions, 'switch');
 
             if (switchIsPossibleSsi) {
                 console.log(`>> ${player}: Switching is possible`);
@@ -835,13 +831,13 @@ class ChecksSwitchAgent extends BattleAgent {
 
                 // check if we have gsi to the opponent's active pokemon in own team
                 // returns [gsiExists, gsiName, gsiIndexInTeam]
-                let gsiData = this._inXsi(info, oppMonChecks.gsi);
+                const gsiData = this._inXsi(info, oppMonChecks.gsi);
                 // whether we have a gsi in the team
-                let gsiExists = gsiData[0];
+                const gsiExists = gsiData[0];
                 // pokemon name (to which we should switch)
-                let gsiName = gsiData[1];
+                const gsiName = gsiData[1];
                 // index of the pokemon we should switch to (in own pokemon list)
-                let gsiIndexInTeam = gsiData[2];
+                const gsiIndexInTeam = gsiData[2];
 
                 if (gsiExists) {
                     console.log(`>> ${player}: Found gsi, switch to ${gsiName}`);
@@ -859,7 +855,7 @@ class ChecksSwitchAgent extends BattleAgent {
                 } else {
                     console.log(`>> ${player}: No gsi found, stay in`);
                     // make sure a MoveAction is possible, else switch anyway
-                    let moveIsPossibleSsi = this._actionTypePossible(actions, 'move');
+                    const moveIsPossibleSsi = this._actionTypePossible(actions, 'move');
 
                     if (moveIsPossibleSsi) {
                         console.log(`>> ${player}: Move is possible, stay in`);
@@ -881,7 +877,7 @@ class ChecksSwitchAgent extends BattleAgent {
         case 'nsi':
             console.log(`>> ${player}: Search gsi/ssi`);
             // in this case the goal is to search gsi first and then ssi
-            let switchIsPossibleNsi = this._actionTypePossible(actions, 'switch');
+            const switchIsPossibleNsi = this._actionTypePossible(actions, 'switch');
 
             if (switchIsPossibleNsi) {
                 console.log(`>> ${player}: Switching is possible`);
@@ -893,10 +889,10 @@ class ChecksSwitchAgent extends BattleAgent {
                     break;
                 }
                 // check if we have gsi to the opponent's active pokemon in own team
-                let gsiDataNsi = this._inXsi(info, oppMonChecks.gsi);
-                let gsiExistsNsi = gsiDataNsi[0];
-                let gsiNameNsi = gsiDataNsi[1];
-                let gsiIndexInTeamNsi = gsiDataNsi[2];
+                const gsiDataNsi = this._inXsi(info, oppMonChecks.gsi);
+                const gsiExistsNsi = gsiDataNsi[0];
+                const gsiNameNsi = gsiDataNsi[1];
+                const gsiIndexInTeamNsi = gsiDataNsi[2];
 
                 if (gsiExistsNsi) {
                     console.log(`>> ${player}: Found gsi, switch to ${gsiNameNsi}`);
@@ -912,10 +908,10 @@ class ChecksSwitchAgent extends BattleAgent {
                     }
                 } else {
                     console.log(`>> ${player}: No gsi found, search for ssi`);
-                    let ssiDataNsi = this._inXsi(info, oppMonChecks.ssi);
-                    let ssiExistsNsi = ssiDataNsi[0];
-                    let ssiNameNsi = ssiDataNsi[1];
-                    let ssiIndexInTeamNsi = ssiDataNsi[2];
+                    const ssiDataNsi = this._inXsi(info, oppMonChecks.ssi);
+                    const ssiExistsNsi = ssiDataNsi[0];
+                    const ssiNameNsi = ssiDataNsi[1];
+                    const ssiIndexInTeamNsi = ssiDataNsi[2];
 
                     if (ssiExistsNsi) {
                         console.log(`>> ${player}: Found ssi, switch to ${ssiNameNsi}`);
@@ -933,7 +929,7 @@ class ChecksSwitchAgent extends BattleAgent {
                     } else {
                         console.log(`>> ${player}: No ssi found, stay in`);
                         // make sure a MoveAction is possible, else switch anyway
-                        let moveIsPossibleNsi = this._actionTypePossible(actions, 'move');
+                        const moveIsPossibleNsi = this._actionTypePossible(actions, 'move');
 
                         if (moveIsPossibleNsi) {
                             console.log(`>> ${player}: Move is possible, stay in`);
@@ -957,7 +953,7 @@ class ChecksSwitchAgent extends BattleAgent {
         case 'na':
             console.log(`>> ${player}: Search gsi/ssi/nsi, or typeResistance`);
             // in this case the goal is to search gsi first then ssi then nsi
-            let switchIsPossibleNa = this._actionTypePossible(actions, 'switch');
+            const switchIsPossibleNa = this._actionTypePossible(actions, 'switch');
 
             if (switchIsPossibleNa) {
                 console.log(`>> ${player}: Switching is possible`);
@@ -968,10 +964,10 @@ class ChecksSwitchAgent extends BattleAgent {
                     break;
                 }
                 // check if we have gsi to the opponent's active pokemon in own team
-                let gsiDataNa = this._inXsi(info, oppMonChecks.gsi);
-                let gsiExistsNa = gsiDataNa[0];
-                let gsiNameNa = gsiDataNa[1];
-                let gsiIndexInTeamNa = gsiDataNa[2];
+                const gsiDataNa = this._inXsi(info, oppMonChecks.gsi);
+                const gsiExistsNa = gsiDataNa[0];
+                const gsiNameNa = gsiDataNa[1];
+                const gsiIndexInTeamNa = gsiDataNa[2];
 
                 if (gsiExistsNa) {
                     console.log(`>> ${player}: Found gsi, switch to ${gsiNameNa}`);
@@ -984,10 +980,10 @@ class ChecksSwitchAgent extends BattleAgent {
                     }
                 } else {
                     console.log(`>> ${player}: No gsi found, search for ssi`);
-                    let ssiDataNa = this._inXsi(info, oppMonChecks.ssi);
-                    let ssiExistsNa = ssiDataNa[0];
-                    let ssiNameNa = ssiDataNa[1];
-                    let ssiIndexInTeamNa = ssiDataNa[2];
+                    const ssiDataNa = this._inXsi(info, oppMonChecks.ssi);
+                    const ssiExistsNa = ssiDataNa[0];
+                    const ssiNameNa = ssiDataNa[1];
+                    const ssiIndexInTeamNa = ssiDataNa[2];
 
                     if (ssiExistsNa) {
                         console.log(`>> ${player}: Found ssi, switch to ${ssiNameNa}`);
@@ -1004,10 +1000,10 @@ class ChecksSwitchAgent extends BattleAgent {
                         }
                     } else {
                         console.log(`>> ${player}: No ssi found, search for nsi`);
-                        let nsiDataNa = this._inXsi(info, oppMonChecks.nsi);
-                        let nsiExistsNa = nsiDataNa[0];
-                        let nsiNameNa = nsiDataNa[1];
-                        let nsiIndexInTeamNa = nsiDataNa[2];
+                        const nsiDataNa = this._inXsi(info, oppMonChecks.nsi);
+                        const nsiExistsNa = nsiDataNa[0];
+                        const nsiNameNa = nsiDataNa[1];
+                        const nsiIndexInTeamNa = nsiDataNa[2];
 
                         if (nsiExistsNa) {
                             console.log(`>> ${player}: Found nsi, switch to ${nsiNameNa}`);
