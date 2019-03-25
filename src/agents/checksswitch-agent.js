@@ -41,21 +41,6 @@ class ChecksSwitchAgent extends TrackingAgent {
     act(actionSpace, observation, reward, done) {
         super.update(observation);
         // TODO: if opponent chose uturn/voltswitch/etc. skip computing
-        // determine player and opponent
-        console.log('----');
-        console.log(BattleTypeChart['Fire'].damageTaken['Bug']);
-        console.log(BattlePokedex['ninetalesalola'].types);
-
-        // console.log(info.side.pokemon);
-
-        // only in first turn
-        // if (info.teamPreview) {
-        //     let xsiMatrix = new Array(6);
-        //     for (let i = 0; i < x.length; i++) {
-        //         xsiMatrix[i] = new Array(6);
-        //     }
-        //     console.log(xsiMatrix);
-        // }
 
         if (info.teamPreview) {
             this._handleTeamPreview(info, battle);
