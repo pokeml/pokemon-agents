@@ -1,7 +1,7 @@
 'use strict';
 // 0: normal damage, 1: super effective, 2: resisted, 3: immune
 /** @type {{[k: string]: TypeData}} */
-let BattleTypeChart = {
+const BattleTypeChart = {
     'Bug': {
         damageTaken: {
             'Bug': 0,

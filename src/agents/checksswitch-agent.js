@@ -1,6 +1,5 @@
 'use strict';
 
-const _ = require('underscore');
 const checks = require('../../data/compTest.json');
 const types = require('../../data/types.js');
 const pokedex = require('../../Pokemon-Showdown/data/pokedex.js');
