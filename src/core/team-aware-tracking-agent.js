@@ -9,11 +9,12 @@ const storage = require('../tracking/storage');
 class TeamAwareTrackingAgent extends TrackingAgent {
     /**
      * @param {'p1' | 'p2'} id
+     * @param {number} [seed]
      * @param {object} team
      * @param {boolean} [debug]
      */
-    constructor(id, team, debug = false) {
-        super(id, debug);
+    constructor(id, seed, team, debug = false) {
+        super(id, debug, seed);
         this.unpackedTeam = storage.unpackTeam(team);
     }
 
