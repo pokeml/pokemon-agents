@@ -41,39 +41,17 @@ class ChecksSwitchAgent extends TrackingAgent {
     act(actionSpace, observation, reward, done) {
         super.update(observation);
         // TODO: if opponent chose uturn/voltswitch/etc. skip computing
-
-        if (info.teamPreview) {
-            this._handleTeamPreview(info, battle);
+        const state = this.state;
+        if (state.request.teamPreview) {
+            this._handleTeamPreview(state);
+            return this._sample(actionSpace);
         }
+        const myActiveMon = this._normName(this.getActivePokemonSpecies(true));
+        const oppActiveMon = this._normName(this.getActivePokemonSpecies(false));
 
-        // get my active mon
-        let myActiveMon;
-        let oppActiveMon;
-        const myMons = info.side.pokemon;
-        for (const pokemon of myMons) {
-            if (pokemon.active == true) {
-                myActiveMon = this._normName(pokemon.details);
-            }
+        if (myActiveMon === '' || oppActiveMon === '') {
+            return this._sample(actionSpace);
         }
-
-        // get the opponent's active mon
-        // if p1, go into Bot 2's pokemon list to search for the active pokemon
-        if (this.id === 'p1') {
-            if (battle.sides[1].active[0]) {
-                oppActiveMon = this._normName(battle.sides[1].active[0].details);
-            } else {
-                oppActiveMon = 'missingno';
-                // console.log('Not initialized yet');
-            }
-        } else {
-            if (battle.sides[0].active[0]) {
-                oppActiveMon = this._normName(battle.sides[0].active[0].details);
-            } else {
-                oppActiveMon = 'missingno';
-                // console.log('Not initialized yet');
-            }
-        }
-
         // get the current matchup based on checksgraph
         const xsiactiveMatchup = this._xsilookUpInMatchupMatrix(myActiveMon, oppActiveMon);
         // find the opposing active pokemon on the graph and store its checks and counters
@@ -87,26 +65,27 @@ class ChecksSwitchAgent extends TrackingAgent {
         // get the current meatchup based on typesgraph
         const typesactiveMatchup = this._typeslookUpInMatchupMatrix(myActiveMon, oppActiveMon);
 
-        // console.log(`>> ${this.id}: I'm ${this.id}, my opponent is ${opponent}.`);
         console.log(`>> ${this.id}: My active ${myActiveMon} is ${typeOfCheck} `
             + `to my opponent's active ${oppActiveMon}`);
 
         let action;
-        // if it's the first turn (team preview), choose lead and return
-        if (info.teamPreview) {
-            // TODO: choose lead here
-            action = _.sample(actions);
-            return action;
-        }
 
         // try to find a pokemon on your team that does better against the current opposing pokemon.
         // if the current pokemon is already the best choice, attack.
         // if there is a pokemon that does better against the current opposing pokemon, switch to it
-        const xsibestSwitch = this._xsiGetBestSwitch(battle, actions, info,
-            xsiactiveMatchup, myActiveMon, oppActiveMon);
+        const xsibestSwitch = this._xsiGetBestSwitch(
+            actionSpace,
+            xsiactiveMatchup,
+            myActiveMon,
+            oppActiveMon
+        );
         console.log('   --');
-        const typebestSwitch = this._typeGetBestSwitch(battle, actions, info,
-            typesactiveMatchup, myActiveMon, oppActiveMon);
+        const typebestSwitch = this._typeGetBestSwitch(
+            actionSpace,
+            typesactiveMatchup,
+            myActiveMon,
+            oppActiveMon
+        );
         if (xsibestSwitch) {
             console.log(`>> ${this.id}: xsi best switch`);
             console.log(typebestSwitch);
@@ -114,16 +93,16 @@ class ChecksSwitchAgent extends TrackingAgent {
             console.log(xsibestSwitch);
             action = xsibestSwitch;
         } else {
-            const moveIsPossible = this._actionTypePossible(actions, 'move');
+            const moveIsPossible = this._actionTypePossible(actionSpace, 'move');
             if (moveIsPossible) {
                 // only keep MoveActions
-                const stayInActions = actions.filter((e) => (e.type === 'move'));
+                const stayInActions = actionSpace.filter((e) => (e.type === 'move'));
                 // TODO: 1v1
-                action = _.sample(stayInActions);
+                action = this._sample(stayInActions);
             } else {
                 console.log(`>> ${this.id}: No switch was recommended.`);
-                console.log(actions);
-                action = _.sample(actions);
+                console.log(actionSpace);
+                action = this._sample(actionSpace);
             }
         }
 
@@ -134,15 +113,13 @@ class ChecksSwitchAgent extends TrackingAgent {
      * calculates the best switch possible in current turn
      * when only one switch option possible in actions (length==1). this function returns it
      *
-     * @param {battle} battle
-     * @param {actions} actions
-     * @param {info} info
+     * @param {actions} actionSpace
      * @param {int} activeMatchup current matchup Value of myActiveMon vs. oppActiveMon
      * @param {string} myActiveMon
      * @param {string} oppActiveMon
      * @return {action} if null, it signals to caller that no switch shall be done
      */
-    _xsiGetBestSwitch(battle, actions, info, activeMatchup, myActiveMon, oppActiveMon) {
+    _xsiGetBestSwitch(actionSpace, activeMatchup, myActiveMon, oppActiveMon) {
         let returnAction = null;
         // check if bigger value exists in matchupMatrix compared to activeMatchup
         // look at opposing mon's column and determine max
@@ -165,46 +142,43 @@ class ChecksSwitchAgent extends TrackingAgent {
                 maxMatchupValue = currentMatchupValue;
                 switchToNameBestOld = switchToNameBest;
                 switchToNameBest = this._myMonsList[i];
-                if (this._isFainted(this._myMonsList[i], info)) {
+                if (this._isFainted(this._myMonsList[i])) {
                     console.log(`>> ${this.id}(GBS): ${this._myMonsList[i]} fainted`);
                     maxMatchupValue = oldMax;
                     switchToNameBest = switchToNameBestOld;
                 }
-                if (this._isActive(this._myMonsList[i], info)) {
+                if (this._isActive(this._myMonsList[i])) {
                     console.log(`>> ${this.id}(GBS): ${this._myMonsList[i]} is already active`);
                     maxMatchupValue = oldMax;
                     switchToNameBest = switchToNameBestOld;
-                    // console.log(`>> ${this.id}(GBS): Next best switch is ${switchToNameBest}`);
                 }
             }
         }
         console.log(`>> ${this.id}(GBS): activeMatchup ${activeMatchup}, `
-          + `maxMatchupValue ${maxMatchupValue}`);
+            + `maxMatchupValue ${maxMatchupValue}`);
         console.log(`>> ${this.id}(GBS): Besides staying in, `
-          + `best switch would be ${switchToNameBest}`);
+            + `best switch would be ${switchToNameBest}`);
 
         if (maxMatchupValue <= activeMatchup) {
             // don't switch, a best check already active
             console.log(`>> ${this.id}(GBS): A best check already active`);
             // if no moveactions possible, recommend switch anyway with a best switch
-            const moveIsPossible = this._actionTypePossible(actions, 'move');
+            const moveIsPossible = this._actionTypePossible(actionSpace, 'move');
             if (!moveIsPossible) {
                 console.log(`>> ${this.id}(GBS): No move is possible, recommend switch anyway.`);
-                const switchIsPossible = this._actionTypePossible(actions, 'switch');
+                const switchIsPossible = this._actionTypePossible(actionSpace, 'switch');
                 if (switchIsPossible) {
                     console.log(`>> ${this.id}(GBS): Switching is possible`);
                     // if only one choice in switching then no need to continue
-                    if (actions.length == 1) {
+                    if (actionSpace.length == 1) {
                         console.log(`>> ${this.id}(GBS): Only one option to switch`);
-                        returnAction = _.sample(actions);
-                        return returnAction;
+                        return this._sample(actionSpace);
                     }
-                    // TODO: find out when switchactions can not be found in actions
-                    // returnAction = _.sample(actions);
-                    const indexInOwnTeam = this._getIndexInOwnTeam(switchToNameBest, info);
-                    // search for correct switch action in actions object
-                    for (const act of actions) {
-                        if ((act.type === 'switch') && (act.pokeNum == (indexInOwnTeam))) {
+                    // TODO: find out when switchactions can not be found in actionSpace
+                    const indexInOwnTeam = this._getIndexInOwnTeam(switchToNameBest);
+                    // search for correct switch action in actionSpace object
+                    for (const act of actionSpace) {
+                        if ((act.type === 'switch') && (act.pokeNum === (indexInOwnTeam))) {
                             console.log(`>> ${this.id}(GBS): Switchaction index ${indexInOwnTeam}`);
                             returnAction = act;
                             console.log(`>> ${this.id}(GBS): Switching to ${switchToNameBest}`);
@@ -218,21 +192,19 @@ class ChecksSwitchAgent extends TrackingAgent {
         } else {
             // better check found than active, switch to switchToName
             console.log(`>> ${this.id}(GBS): switching to ${switchToNameBest}`);
-            const switchIsPossible = this._actionTypePossible(actions, 'switch');
+            const switchIsPossible = this._actionTypePossible(actionSpace, 'switch');
             if (switchIsPossible) {
                 console.log(`>> ${this.id}(GBS): Switching is possible`);
                 // if only one choice in switching then no need to continue
-                if (actions.length == 1) {
+                if (actionSpace.length === 1) {
                     console.log(`>> ${this.id}(GBS): Only one option to switch`);
-                    returnAction = _.sample(actions);
-                    return returnAction;
+                    return this._sample(actionSpace);
                 }
-                // TODO: find out when switchactions can not be found in actions
-                // returnAction = _.sample(actions);
-                const indexInOwnTeam = this._getIndexInOwnTeam(switchToNameBest, info);
-                // search for correct switch action in actions object
-                for (const act of actions) {
-                    if ((act.type === 'switch') && (act.pokeNum == (indexInOwnTeam))) {
+                // TODO: find out when switchactions can not be found in actionSpace
+                const indexInOwnTeam = this._getIndexInOwnTeam(switchToNameBest);
+                // search for correct switch action in actionSpace object
+                for (const act of actionSpace) {
+                    if ((act.type === 'switch') && (act.pokeNum === (indexInOwnTeam))) {
                         console.log(`>> ${this.id}(GBS): Switchaction index ${indexInOwnTeam}`);
                         returnAction = act;
                         console.log(`>> ${this.id}(GBS): switching to ${switchToNameBest}`);
@@ -248,17 +220,15 @@ class ChecksSwitchAgent extends TrackingAgent {
 
     /**
      * calculates the best switch possible in current turn
-     * when only one switch option possible in actions (length==1). this function returns it
+     * when only one switch option possible in actionSpace (length==1). this function returns it
      *
-     * @param {battle} battle
-     * @param {actions} actions
-     * @param {info} info
+     * @param {actions} actionSpace
      * @param {int} activeMatchup current matchup Value of myActiveMon vs. oppActiveMon
      * @param {string} myActiveMon
      * @param {string} oppActiveMon
      * @return {action} if null, it signals to caller that no switch shall be done
      */
-    _typeGetBestSwitch(battle, actions, info, activeMatchup, myActiveMon, oppActiveMon) {
+    _typeGetBestSwitch(actionSpace, activeMatchup, myActiveMon, oppActiveMon) {
         let returnAction = null;
         // check if bigger value exists in matchupMatrix compared to activeMatchup
         // look at opposing mon's column and determine max
@@ -281,12 +251,12 @@ class ChecksSwitchAgent extends TrackingAgent {
                 maxMatchupValue = currentMatchupValue;
                 switchToNameBestOld = switchToNameBest;
                 switchToNameBest = this._myMonsList[i];
-                if (this._isFainted(this._myMonsList[i], info)) {
+                if (this._isFainted(this._myMonsList[i])) {
                     console.log(`>> ${this.id}(TBS): ${this._myMonsList[i]} fainted`);
                     maxMatchupValue = oldMax;
                     switchToNameBest = switchToNameBestOld;
                 }
-                if (this._isActive(this._myMonsList[i], info)) {
+                if (this._isActive(this._myMonsList[i])) {
                     console.log(`>> ${this.id}(TBS): ${this._myMonsList[i]} is already active`);
                     maxMatchupValue = oldMax;
                     switchToNameBest = switchToNameBestOld;
@@ -295,32 +265,30 @@ class ChecksSwitchAgent extends TrackingAgent {
             }
         }
         console.log(`>> ${this.id}(TBS): activeMatchup ${activeMatchup}, `
-          + `maxMatchupValue ${maxMatchupValue}`);
+            + `maxMatchupValue ${maxMatchupValue}`);
         console.log(`>> ${this.id}(TBS): Besides staying in, `
-          + `best switch would be ${switchToNameBest}`);
+            + `best switch would be ${switchToNameBest}`);
 
         if (maxMatchupValue <= activeMatchup) {
             // don't switch, a best check already active
             console.log(`>> ${this.id}(TBS): A best check already active`);
             // if no moveactions possible, recommend switch anyway with a best switch
-            const moveIsPossible = this._actionTypePossible(actions, 'move');
+            const moveIsPossible = this._actionTypePossible(actionSpace, 'move');
             if (!moveIsPossible) {
                 console.log(`>> ${this.id}(TBS): No move is possible, recommend switch anyway.`);
-                const switchIsPossible = this._actionTypePossible(actions, 'switch');
+                const switchIsPossible = this._actionTypePossible(actionSpace, 'switch');
                 if (switchIsPossible) {
                     console.log(`>> ${this.id}(TBS): Switching is possible`);
                     // if only one choice in switching then no need to continue
-                    if (actions.length == 1) {
+                    if (actionSpace.length === 1) {
                         console.log(`>> ${this.id}(TBS): Only one option to switch`);
-                        returnAction = _.sample(actions);
-                        return returnAction;
+                        return this._sample(actionSpace);
                     }
-                    // TODO: find out when switchactions can not be found in actions
-                    // returnAction = _.sample(actions);
-                    const indexInOwnTeam = this._getIndexInOwnTeam(switchToNameBest, info);
-                    // search for correct switch action in actions object
-                    for (const act of actions) {
-                        if ((act.type === 'switch') && (act.pokeNum == (indexInOwnTeam))) {
+                    // TODO: find out when switchactions can not be found in actionSpace
+                    const indexInOwnTeam = this._getIndexInOwnTeam(switchToNameBest);
+                    // search for correct switch action in actionSpace object
+                    for (const act of actionSpace) {
+                        if ((act.type === 'switch') && (act.pokeNum === (indexInOwnTeam))) {
                             console.log(`>> ${this.id}(TBS): Switchaction index ${indexInOwnTeam}`);
                             returnAction = act;
                             console.log(`>> ${this.id}(TBS): Switching to ${switchToNameBest}`);
@@ -334,21 +302,19 @@ class ChecksSwitchAgent extends TrackingAgent {
         } else {
             // better check found than active, switch to switchToName
             console.log(`>> ${this.id}(TBS): switching to ${switchToNameBest}`);
-            const switchIsPossible = this._actionTypePossible(actions, 'switch');
+            const switchIsPossible = this._actionTypePossible(actionSpace, 'switch');
             if (switchIsPossible) {
                 console.log(`>> ${this.id}(TBS): Switching is possible`);
                 // if only one choice in switching then no need to continue
-                if (actions.length == 1) {
+                if (actionSpace.length === 1) {
                     console.log(`>> ${this.id}(TBS): Only one option to switch`);
-                    returnAction = _.sample(actions);
-                    return returnAction;
+                    return this._sample(actionSpace);
                 }
-                // TODO: find out when switchactions can not be found in actions
-                // returnAction = _.sample(actions);
-                const indexInOwnTeam = this._getIndexInOwnTeam(switchToNameBest, info);
-                // search for correct switch action in actions object
-                for (const act of actions) {
-                    if ((act.type === 'switch') && (act.pokeNum == (indexInOwnTeam))) {
+                // TODO: find out when switchactions can not be found in actionSpace
+                const indexInOwnTeam = this._getIndexInOwnTeam(switchToNameBest);
+                // search for correct switch action in actionSpace object
+                for (const act of actionSpace) {
+                    if ((act.type === 'switch') && (act.pokeNum === (indexInOwnTeam))) {
                         console.log(`>> ${this.id}(TBS): Switchaction index ${indexInOwnTeam}`);
                         returnAction = act;
                         console.log(`>> ${this.id}(TBS): switching to ${switchToNameBest}`);
@@ -366,19 +332,18 @@ class ChecksSwitchAgent extends TrackingAgent {
      * gets the index of the pokemon in own pokemon list for switching
      *
      * @param {string} switchTo pokemon name, to switch to
-     * @param {info} info
      * @return {int}
      */
-    _getIndexInOwnTeam(switchTo, info) {
+    _getIndexInOwnTeam(switchTo) {
         // keeps current pokemon during iterating our teamlist
         let currentPokemon;
         let idx = 0;
         // index of the pokemon we should switch to (in own pokemon list)
         let indexInTeam = 0;
         // check if we have xsi to the opponent's active pokemon in own team
-        for (const pokemon of info.side.pokemon) {
+        for (const pokemon of this.getOwnSide().pokemon) {
             // we want to switch, skip the own active pokemon
-            if (!pokemon.active) {
+            if (!this._isActive(switchTo)) {
                 currentPokemon = this._normName(pokemon.details);
                 if (switchTo === currentPokemon) {
                     indexInTeam = idx;
@@ -387,29 +352,22 @@ class ChecksSwitchAgent extends TrackingAgent {
             }
             idx++;
         }
-        return indexInTeam+1;
+        return indexInTeam + 1;
     }
 
     /**
      * teamPreview computations (and choosing lead later)
-     *
-     * @param {info} info
-     * @param {battle} battle
+     * @param {state} state
      */
-    _handleTeamPreview(info, battle) {
+    _handleTeamPreview(state) {
         this._myMonsList = new Array(6);
         let arrayIndex = 0;
-        for (const pokemon of info.side.pokemon) {
+        for (const pokemon of this.getOwnSide().pokemon) {
             this._myMonsList[arrayIndex] = this._normName(pokemon.details);
             arrayIndex++;
         }
         // get list of opposing pokemon
-        let oppMons;
-        if (this.id === 'p1') {
-            oppMons = battle.sides[1].pokemon;
-        } else {
-            oppMons = battle.sides[0].pokemon;
-        }
+        const oppMons = this.getOpponentSide().pokemon;
 
         this._oppMonsList = new Array(6);
         arrayIndex = 0;
@@ -461,7 +419,7 @@ class ChecksSwitchAgent extends TrackingAgent {
             for (let j = 0; j < 6; j++) {
                 // console.log(`>> ${this.id}: Search in ${oppMonW} for ${myMonsList[j]}`);
                 this._xsiMatchupMatrix[j][i] =
-                 this._xsiMatchupValue(oppMonW, this._myMonsList[j]);
+                    this._xsiMatchupValue(oppMonW, this._myMonsList[j]);
                 // console.log(`>> ${this.id}: ${xsiMatchupMatrix[j][i]}`);
             }
         }
@@ -476,7 +434,7 @@ class ChecksSwitchAgent extends TrackingAgent {
             for (let j = 0; j < 6; j++) {
                 // console.log(`>> ${this.id}: Search in ${oppMonW} for ${myMonsList[j]}`);
                 this._typesMatchupMatrix[j][i] =
-                 this._typesMatchupValue(oppMonW, this._myMonsList[j]);
+                    this._typesMatchupValue(oppMonW, this._myMonsList[j]);
                 // console.log(`>> ${this.id}: ${xsiMatchupMatrix[j][i]}`);
             }
         }
@@ -486,8 +444,8 @@ class ChecksSwitchAgent extends TrackingAgent {
         for (let i = 0; i < 6; i++) {
             for (let j = 0; j < 6; j++) {
                 // to convert from typeMatrix to checksmatrix do: (8-value)*(3/8)
-                this._typesMatchupMatrix[i][j] = (8-this._typesMatchupMatrix[i][j])*(0.375);
-                if (this._xsiMatchupMatrix[i][j] == -1) {
+                this._typesMatchupMatrix[i][j] = (8 - this._typesMatchupMatrix[i][j]) * (0.375);
+                if (this._xsiMatchupMatrix[i][j] === -1) {
                     this._xsiMatchupMatrix[i][j] = this._typesMatchupMatrix[i][j];
                 }
             }
@@ -554,20 +512,11 @@ class ChecksSwitchAgent extends TrackingAgent {
      * in own team
      *
      * @param {string} isActiveMon the pokemon of which we want to know if it is active
-     * @param {info} info
      * @return {bool}
      */
-    _isActive(isActiveMon, info) {
-        let currentPokemon;
-        let isActive = false;
-        for (const pokemon of info.side.pokemon) {
-            currentPokemon = this._normName(pokemon.details);
-            if ((isActiveMon === currentPokemon) && (pokemon.active == true)) {
-                isActive = true;
-                break;
-            }
-        }
-        return isActive;
+    _isActive(isActiveMon) {
+        const activeMon = this._normName(this.getActivePokemonSpecies(true));
+        return activeMon === isActiveMon;
     }
 
     /**
@@ -575,16 +524,14 @@ class ChecksSwitchAgent extends TrackingAgent {
      * in own team
      *
      * @param {string} faintedMon
-     * @param {info} info
      * @return {bool}
      */
-    _isFainted(faintedMon, info) {
+    _isFainted(faintedMon) {
         let currentPokemon;
         let isFainted = false;
-        for (const pokemon of info.side.pokemon) {
+        for (const pokemon of this.getOwnSide().pokemon) {
             currentPokemon = this._normName(pokemon.details);
-            // condition[0] === '0'
-            if ((faintedMon === currentPokemon) && (pokemon.condition === '0 fnt')) {
+            if ((faintedMon === currentPokemon) && (pokemon.fainted)) {
                 isFainted = true;
                 break;
             }
@@ -611,15 +558,15 @@ class ChecksSwitchAgent extends TrackingAgent {
     }
 
     /**
-     * return whether the action specified in actionType is present in the actions object
+     * return whether the action specified in actionType is present in the actionSpace object
      *
-     * @param {actions} actions
+     * @param {actions} actionSpace
      * @param {string} actionType
      * @return {bool}
      */
-    _actionTypePossible(actions, actionType) {
+    _actionTypePossible(actionSpace, actionType) {
         let actionPossible = false;
-        for (const acts of actions) {
+        for (const acts of actionSpace) {
             if (acts.type === actionType) {
                 actionPossible = true;
                 break;
@@ -691,11 +638,11 @@ class ChecksSwitchAgent extends TrackingAgent {
         let oppMonTypes = BattlePokedex[oppMon].types;
 
         // dublicate types of mons with only one type
-        if (myMonTypes.length == 1) {
+        if (myMonTypes.length === 1) {
             myMonTypes = [myMonTypes[0], myMonTypes[0]];
         }
 
-        if (oppMonTypes.length == 1) {
+        if (oppMonTypes.length === 1) {
             oppMonTypes = [oppMonTypes[0], oppMonTypes[0]];
         }
 
@@ -743,45 +690,6 @@ class ChecksSwitchAgent extends TrackingAgent {
             console.log('Error in _getMappedTypeValue');
         }
         return mappedTypeValue;
-    }
-
-    /**
-     * returns xsi (gsi or ssi or nsi) data
-     *
-     * @param {info} info
-     * @param {string[]} oppMonChecks //.xsi, array which should be searched
-     * @return {[]}
-     */
-    _inXsi(info, oppMonChecks) {
-        // keeps current pokemon during iterating our teamlist
-        let currentPokemon;
-        // whether we have a xsi in the team
-        let xsiExists = false;
-        // the xsi pokemon's index in oppActiveMon's xsi list
-        let xsiIndex;
-        // pokemon name (to which we should switch)
-        let xsiName;
-        // index of the pokemon we should switch to (in own pokemon list)
-        let xsiIndexInTeam = 0;
-        // check if we have xsi to the opponent's active pokemon in own team
-        for (const pokemon of info.side.pokemon) {
-            // we want to switch, so skip the own active pokemon
-            if (!pokemon.active) {
-                currentPokemon = this._normName(pokemon.details);
-                // check if currentPokemon appears in oppActiveMon's xsi list
-                if (oppMonChecks) {
-                    xsiIndex = oppMonChecks.indexOf(currentPokemon);
-                    if (xsiIndex > -1) {
-                        xsiExists = true;
-                        xsiName = oppMonChecks[xsiIndex];
-                        // found xsi, exit loop
-                        break;
-                    }
-                }
-            }
-            xsiIndexInTeam++;
-        }
-        return [xsiExists, xsiName, xsiIndexInTeam];
     }
 }
 
