@@ -129,7 +129,6 @@ class ChecksSwitchAgent extends TrackingAgent {
 
         return action;
     }
-}
 
     /**
      * Choose an action.
