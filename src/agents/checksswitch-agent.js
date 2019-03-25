@@ -131,18 +131,6 @@ class ChecksSwitchAgent extends TrackingAgent {
     }
 
     /**
-     * Choose an action.
-     *
-     * @param {AnyObject} battle
-     * @param {string[]} actions
-     * @param {AnyObject} info
-     * @return {string}
-     */
-    // act(battle, actions, info) {
-    //
-    // }
-
-    /**
      * calculates the best switch possible in current turn
      * when only one switch option possible in actions (length==1). this function returns it
      *
