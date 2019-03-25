@@ -16,7 +16,7 @@ class TrackingAgent extends Agent {
      */
     constructor(id, debug = false) {
         super();
-        if (id !== 'player1' && id !== 'player2') {
+        if (id !== 'p1' && id !== 'p2') {
             throw new Error('invalid player id');
         }
         this.id = id;
@@ -131,7 +131,7 @@ class TrackingAgent extends Agent {
      * @return {Side}
      */
     getOwnSide() {
-        if (this.id === 'player1') {
+        if (this.id === 'p1') {
             return this._battle.p1;
         }
         return this._battle.p2;
@@ -141,7 +141,7 @@ class TrackingAgent extends Agent {
      * @return {Side}
      */
     getOpponentSide() {
-        if (this.id === 'player1') {
+        if (this.id === 'p1') {
             return this._battle.p2;
         }
         return this._battle.p1;
