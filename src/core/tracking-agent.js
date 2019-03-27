@@ -5,6 +5,7 @@ const _ = require('underscore');
 const Agent = require('./agent');
 const Battle = require('../tracking/battle');
 const splitFirst = require('../../utils/utils').splitFirst;
+const seedrandom = require('seedrandom');
 
 /**
  * An agent that can keep track of the battle state from its observations.
@@ -12,14 +13,17 @@ const splitFirst = require('../../utils/utils').splitFirst;
 class TrackingAgent extends Agent {
     /**
      * @param {'p1' | 'p2'} id
+     * @param {number} [seed]
      * @param {boolean} [debug]
      */
-    constructor(id, debug = false) {
+    constructor(id, seed, debug = false) {
         super();
-        if (id !== 'player1' && id !== 'player2') {
+        if (id !== 'p1' && id !== 'p2') {
             throw new Error('invalid player id');
         }
         this.id = id;
+        this.seed = seed;
+        this.random = seedrandom(seed);
         this.debug = debug;
 
         this._request = /** @type {Request} */ null;
@@ -105,6 +109,7 @@ class TrackingAgent extends Agent {
      * @override
      */
     reset() {
+        this.random = seedrandom(this.seed);
         if (this._battle) {
             this._battle.destroy();
         }
@@ -131,7 +136,7 @@ class TrackingAgent extends Agent {
      * @return {Side}
      */
     getOwnSide() {
-        if (this.id === 'player1') {
+        if (this.id === 'p1') {
             return this._battle.p1;
         }
         return this._battle.p2;
@@ -141,7 +146,7 @@ class TrackingAgent extends Agent {
      * @return {Side}
      */
     getOpponentSide() {
-        if (this.id === 'player1') {
+        if (this.id === 'p1') {
             return this._battle.p2;
         }
         return this._battle.p1;
@@ -164,6 +169,16 @@ class TrackingAgent extends Agent {
             return '';
         }
         return active.species;
+    }
+
+    /**
+     * Sample a random element from an array.
+     *
+     * @param {Array} arr
+     * @return {Object}
+     */
+    _sample(arr) {
+        return arr[Math.floor(this.random() * arr.length)];
     }
 }
 

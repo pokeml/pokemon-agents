@@ -16,7 +16,7 @@ class TeamAwareSimulationAgent extends TeamAwareTrackingAgent {
      * @param {boolean} [debug]
      */
     constructor(id, team, oppTeam, formatId, seed = null, debug = false) {
-        super(id, team, debug);
+        super(id, seed, team, debug);
 
         const battleOptions = {
             formatid: formatId,
