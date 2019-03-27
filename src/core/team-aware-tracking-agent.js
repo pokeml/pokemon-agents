@@ -15,6 +15,7 @@ class TeamAwareTrackingAgent extends TrackingAgent {
      */
     constructor(id, seed, team, debug = false) {
         super(id, debug, seed);
+        this.team = team;
         this.unpackedTeam = storage.unpackTeam(team);
     }
 

@@ -8,6 +8,7 @@ const util = require('util');
 const PokemonEnv = require('pokemon-env');
 const SemiRandomAgent = require('../src/agents/semi-random-agent');
 const SwitchAgent = require('../src/agents/checksswitch-agent');
+const MaxDamageAgent = require('../src/agents/max-damage-agent');
 const teams = require('../data/teams');
 
 // config
@@ -30,12 +31,12 @@ const maxSteps = 1000;
 
 
 // player specs
-const p1Spec = {name: 'p1', team: teams['gen7ou'][1]};
+const p1Spec = {name: 'p1', team: teams['gen7ou'][0]};
 const p2Spec = {name: 'p2', team: teams['gen7ou'][1]};
 
 // agents
-const p1Agent = new SwitchAgent('p1', 'seed:1337');
-const p2Agent = new SemiRandomAgent();
+const p1Agent = new SemiRandomAgent();
+const p2Agent = new MaxDamageAgent('p2', teams['gen7ou'][1], 'gen7ou');
 
 // init environment
 const env = new PokemonEnv('gen7ou', p1Spec, p2Spec);
