@@ -2,6 +2,8 @@
 
 const TeamAwareTrackingAgent = require('../core/team-aware-tracking-agent');
 const BattleSim = require('../../Pokemon-Showdown/sim/battle');
+const teamInference = require('../state-inference/team-inference');
+const storage = require('../tracking/storage');
 
 /**
  * An agent that chooses actions uniformly at random.
@@ -10,22 +12,37 @@ class TeamAwareSimulationAgent extends TeamAwareTrackingAgent {
     /**
      * @param {'p1' | 'p2'} id
      * @param {object} team
-     * @param {object} oppTeam
      * @param {string} formatId
      * @param {number} [seed]
      * @param {boolean} [debug]
      */
-    constructor(id, team, oppTeam, formatId, seed = null, debug = false) {
+    constructor(id, team, formatId, seed = null, debug = false) {
         super(id, seed, team, debug);
+        this.simulatedBattle = null;
+        this.formatId = formatId;
+    }
 
-        const battleOptions = {
-            formatid: formatId,
-            seed: seed ? Array(4).fill(seed) : null,
-        };
+    /**
+     * @override
+     */
+    act(actionSpace, observation, reward, done) {
+        super.update(observation);
+        const state = this.state;
+        if (state.request.teamPreview) {
+            const teamOpponent = storage.packTeam(
+                teamInference.assumeTeamWithUniformStats(
+                    this.getOpponentSide().pokemon
+                )
+            );
 
-        this.simulatedBattle = new BattleSim(battleOptions);
-        this.simulatedBattle.setPlayer('p1', {name: 'p1', team: team});
-        this.simulatedBattle.setPlayer('p2', {name: 'p2', team: oppTeam});
+            const battleOptions = {
+                formatid: this.formatId,
+                seed: this.seed ? Array(4).fill(this.seed) : null,
+            };
+            this.simulatedBattle = new BattleSim(battleOptions);
+            this.simulatedBattle.setPlayer('p1', {name: 'p1', team: this.team});
+            this.simulatedBattle.setPlayer('p2', {name: 'p2', team: teamOpponent});
+        }
     }
 
     /**
