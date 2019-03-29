@@ -14,7 +14,7 @@ class TeamAwareTrackingAgent extends TrackingAgent {
      * @param {boolean} [debug]
      */
     constructor(id, seed, team, debug = false) {
-        super(id, debug, seed);
+        super(id, seed, debug);
         this.team = team;
         this.unpackedTeam = storage.unpackTeam(team);
     }
@@ -28,7 +28,7 @@ class TeamAwareTrackingAgent extends TrackingAgent {
         }
         const activePokemonSpecies = this.getActivePokemonSpecies();
         for (let i = 0; i < this.unpackedTeam.length; i++) {
-            if (this.unpackedTeam[i].species == activePokemonSpecies) {
+            if (this.unpackedTeam[i].species === activePokemonSpecies) {
                 const moves = [];
                 for (let j = 0; j < this.unpackedTeam[i].moves.length; j++) {
                     moves[j] = BattleDex.getMove(this.unpackedTeam[i].moves[j]);
