@@ -7,6 +7,10 @@ const util = require('util');
 
 const PokemonEnv = require('pokemon-env');
 const SemiRandomAgent = require('../src/agents/semi-random-agent');
+<<<<<<< HEAD
+=======
+const SwitchAgent = require('../src/agents/checksswitch-agent');
+>>>>>>> 71a42198771e9eb0a21ae17e06f1f13830364bf0
 const MaxDamageAgent = require('../src/agents/max-damage-agent');
 const teams = require('../data/teams');
 
@@ -25,17 +29,30 @@ const config = {
 };
 
 // parameters
+<<<<<<< HEAD
 const numEpisodes = 30;
+=======
+const numEpisodes = 10;
+>>>>>>> 71a42198771e9eb0a21ae17e06f1f13830364bf0
 const maxSteps = 1000;
 
 
 // player specs
+<<<<<<< HEAD
 const p1Spec = {name: 'player1', team: teams['gen7ou'][0]};
 const p2Spec = {name: 'player2', team: teams['gen7ou'][1]};
 
 // agents
 const p1Agent = new SemiRandomAgent();
 const p2Agent = new MaxDamageAgent('player2', teams['gen7ou'][1], teams['gen7ou'][0], 'gen7ou');
+=======
+const p1Spec = {name: 'p1', team: teams['gen7ou'][0]};
+const p2Spec = {name: 'p2', team: teams['gen7ou'][1]};
+
+// agents
+const p1Agent = new SemiRandomAgent();
+const p2Agent = new MaxDamageAgent('p2', teams['gen7ou'][1], 'gen7ou');
+>>>>>>> 71a42198771e9eb0a21ae17e06f1f13830364bf0
 
 // init environment
 const env = new PokemonEnv('gen7ou', p1Spec, p2Spec);

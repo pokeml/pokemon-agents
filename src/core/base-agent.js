@@ -4,7 +4,12 @@ const _ = require('underscore');
 
 const Agent = require('./agent');
 const Battle = require('../tracking/battle');
+<<<<<<< HEAD:src/core/base-agent.js
 const splitFirst = require('../../utils/tools').splitFirst;
+=======
+const splitFirst = require('../../utils/utils').splitFirst;
+const seedrandom = require('seedrandom');
+>>>>>>> 71a42198771e9eb0a21ae17e06f1f13830364bf0:src/core/tracking-agent.js
 
 /**
  * An agent that can keep track of the battle state from its observations.
@@ -12,14 +17,21 @@ const splitFirst = require('../../utils/tools').splitFirst;
 class BaseAgent extends Agent {
     /**
      * @param {'p1' | 'p2'} id
+     * @param {number} [seed]
      * @param {boolean} [debug]
      */
-    constructor(id, debug = false) {
+    constructor(id, seed, debug = false) {
         super();
+<<<<<<< HEAD:src/core/base-agent.js
         if (id !== 'player1' && id !== 'player2') {
+=======
+        if (id !== 'p1' && id !== 'p2') {
+>>>>>>> 71a42198771e9eb0a21ae17e06f1f13830364bf0:src/core/tracking-agent.js
             throw new Error('invalid player id');
         }
         this.id = id;
+        this.seed = seed;
+        this.random = seedrandom(seed);
         this.debug = debug;
 
         this._request = /** @type {Request} */ null;
@@ -105,6 +117,7 @@ class BaseAgent extends Agent {
      * @override
      */
     reset() {
+        this.random = seedrandom(this.seed);
         if (this._battle) {
             this._battle.destroy();
         }
@@ -131,7 +144,11 @@ class BaseAgent extends Agent {
      * @return {Side}
      */
     getOwnSide() {
+<<<<<<< HEAD:src/core/base-agent.js
         if (this.id === 'player1') {
+=======
+        if (this.id === 'p1') {
+>>>>>>> 71a42198771e9eb0a21ae17e06f1f13830364bf0:src/core/tracking-agent.js
             return this._battle.p1;
         }
         return this._battle.p2;
@@ -141,7 +158,11 @@ class BaseAgent extends Agent {
      * @return {Side}
      */
     getOpponentSide() {
+<<<<<<< HEAD:src/core/base-agent.js
         if (this.id === 'player1') {
+=======
+        if (this.id === 'p1') {
+>>>>>>> 71a42198771e9eb0a21ae17e06f1f13830364bf0:src/core/tracking-agent.js
             return this._battle.p2;
         }
         return this._battle.p1;
@@ -165,6 +186,19 @@ class BaseAgent extends Agent {
         }
         return active.species;
     }
+<<<<<<< HEAD:src/core/base-agent.js
+=======
+
+    /**
+     * Sample a random element from an array.
+     *
+     * @param {Array} arr
+     * @return {Object}
+     */
+    _sample(arr) {
+        return arr[Math.floor(this.random() * arr.length)];
+    }
+>>>>>>> 71a42198771e9eb0a21ae17e06f1f13830364bf0:src/core/tracking-agent.js
 }
 
 module.exports = BaseAgent;
