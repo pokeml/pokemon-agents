@@ -1,5 +1,7 @@
 'use strict';
 
+/* eslint-disable max-len */
+
 const Tools = require('../src/tracking/battle-dex');
 
 /**
@@ -131,13 +133,19 @@ function unpackTeam(buf) {
     return team;
 }
 
+/**
+ * Convert a team object to a compact string representation.
+ *
+ * @param {Object} team
+ * @return {string}
+ */
 function packTeam(team) {
     let buf = '';
     if (!team) return '';
 
     let hasHP;
     for (let i = 0; i < team.length; i++) {
-        let set = team[i];
+        const set = team[i];
         if (buf) buf += ']';
 
         // name
@@ -151,8 +159,8 @@ function packTeam(team) {
         buf += '|' + toId(set.item);
 
         // ability
-        let template = Tools.getTemplate(set.species || set.name);
-        let abilities = template.abilities;
+        const template = Tools.getTemplate(set.species || set.name);
+        const abilities = template.abilities;
         id = toId(set.ability);
         if (abilities) {
             if (id === toId(abilities['0'])) {
@@ -169,12 +177,15 @@ function packTeam(team) {
         }
 
         // moves
+        // TODO: Double check that this is correct. There was a missing bracket.
         buf += '|';
-        if (set.moves) for (let j = 0; j < set.moves.length; j++) {
-            let moveid = toId(set.moves[j]);
-            if (j && !moveid) continue;
-            buf += (j ? ',' : '') + moveid;
-            if (moveid.substr(0, 11) === 'hiddenpower' && moveid.length > 11) hasHP = true;
+        if (set.moves) {
+            for (let j = 0; j < set.moves.length; j++) {
+                const moveid = toId(set.moves[j]);
+                if (j && !moveid) continue;
+                buf += (j ? ',' : '') + moveid;
+                if (moveid.substr(0, 11) === 'hiddenpower' && moveid.length > 11) hasHP = true;
+            }
         }
 
         // nature
@@ -243,5 +254,5 @@ function packTeam(team) {
 
 module.exports = {
     unpackTeam: unpackTeam,
-    packTeam: packTeam
+    packTeam: packTeam,
 };
