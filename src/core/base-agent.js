@@ -4,7 +4,7 @@ const _ = require('underscore');
 
 const Agent = require('./agent');
 const Battle = require('../tracking/battle');
-const splitFirst = require('../../utils/utils').splitFirst;
+const splitFirst = require('../../utils/tools').splitFirst;
 
 /**
  * An agent that can keep track of the battle state from its observations.
@@ -16,7 +16,9 @@ class BaseAgent extends Agent {
      */
     constructor(id, debug = false) {
         super();
-
+        if (id !== 'player1' && id !== 'player2') {
+            throw new Error('invalid player id');
+        }
         this.id = id;
         this.debug = debug;
 
@@ -31,7 +33,7 @@ class BaseAgent extends Agent {
      *
      * @param {string} observation
      */
-    update(observation) {
+    updateState(observation) {
         for (const line of observation.split('\n')) {
             if (this.debug) {
                 console.log(`${line}`.gray);
@@ -123,6 +125,45 @@ class BaseAgent extends Agent {
             }
         };
         this._request = null;
+    }
+
+    /**
+     * @return {Side}
+     */
+    getOwnSide() {
+        if (this.id === 'player1') {
+            return this._battle.p1;
+        }
+        return this._battle.p2;
+    }
+
+    /**
+     * @return {Side}
+     */
+    getOpponentSide() {
+        if (this.id === 'player1') {
+            return this._battle.p2;
+        }
+        return this._battle.p1;
+    }
+
+    /**
+     * @param {bool} own
+     * @return {string}
+     */
+    getActivePokemonSpecies(own=true) {
+        if (own) {
+            const active = this.getOwnSide().active[0];
+            if (active == null) {
+                return '';
+            }
+            return active.species;
+        }
+        const active = this.getOpponentSide().active[0];
+        if (active == null) {
+            return '';
+        }
+        return active.species;
     }
 }
 

@@ -6,23 +6,23 @@ const _ = require('underscore');
 
 const Encoder = require('../core/encoder');
 const BaseAgent = require('../core/base-agent');
-const toId = require('../../utils/utils').toId;
+const tools = require('../../utils/tools');
 
 const pokemon = [
     'tapukoko', 'landorus', 'landorustherian', 'toxapex', 'serperior', 'celesteela', 'medicham',
     'medichammega', 'ninetalesalola', 'magearna', 'zygarde', 'mawile', 'mawilemega', 'manaphy',
 ];
 const moves = [
-    'Fake Out', 'High Jump Kick', 'Zen Headbutt', 'Ice Punch',
-    'Heavy Slam', 'Protect', 'Earthquake', 'Leech Seed',
-    'Thunderbolt', 'U-turn', 'Hidden Power Ice', 'Taunt',
-    'Scald', 'Toxic Spikes', 'Recover', 'Toxic',
-    'Earthquake', 'U-turn', 'Stealth Rock', 'Hidden Power Ice',
-    'Leaf Storm', 'Leech Seed', 'Substitute', 'Hidden Power Fire',
+    'fakeout', 'highjumpkick', 'zenheadbutt', 'icepunch',
+    'heavyslam', 'protect', 'earthquake', 'leechseed',
+    'thunderbolt', 'uturn', 'hiddenpowerice', 'taunt',
+    'scald', 'toxicspikes', 'recover', 'toxic',
+    'earthquake', 'uturn', 'stealthrock', 'hiddenpowerice',
+    'leafstorm', 'leechseed', 'substitute', 'hiddenpowerfire',
 ];
 const vocab = {
-    'pokemon': pokemon,
-    'move': moves,
+    'pokemon': pokemon.sort(),
+    'move': moves.sort(),
 };
 
 /**
@@ -41,7 +41,7 @@ class TestAgent extends BaseAgent {
      * @override
      */
     act(actionSpace, observation, reward, done) {
-        super.update(observation);
+        super.updateState(observation);
         return _.sample(actionSpace);
     }
 
@@ -53,13 +53,14 @@ class TestAgent extends BaseAgent {
 
         const myActive = state.mySide.active[0].id;
         const yourActive = state.yourSide.active[0].id;
-        const myPokemon = state.request.side.pokemon.map((pokemon) => toId(pokemon.ident.substring(3)));
-        const moves = state.request.active ? state.request.active[0].moves.map((m) => m.move) : [null, null, null, null];
+        const team = state.request.side.pokemon.map((pokemon) => tools.toId(pokemon.ident.substring(3)));
+        const moves = state.request.active ? state.request.active[0].moves.map((m) => tools.toId(m.move)) : [null, null, null, null];
 
         const features = [
+            ['bias', 'number', 1],
             ['my_active', 'pokemon', myActive],
             ['your_active', 'pokemon', yourActive],
-            ['team', 'pokemon', myPokemon],
+            ['team', 'pokemon', team],
             ['moves', 'move', moves],
         ];
         return this.encoder.encode(features);

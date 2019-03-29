@@ -19,7 +19,7 @@ const BattlePokedex = require('../../Pokemon-Showdown/data/pokedex').BattlePoked
 const Tools = require('./battle-dex');
 const BattleDexData = require('./battle-dex-data');
 const BattleStats = BattleDexData.BattleStats;
-const toId = require('../../utils/utils').toId;
+const toId = require('../../utils/tools').toId;
 
 class Pokemon {
     constructor(data, side) {

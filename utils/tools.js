@@ -1,3 +1,5 @@
+require('colors');
+
 /**
  * Like string.split(delimiter), but only recognizes the first `limit`
  * delimiters (default 1).
@@ -52,4 +54,18 @@ function toId(text) {
     return ('' + text).toLowerCase().replace(/[^a-z0-9]+/g, '');
 }
 
-module.exports = {splitFirst, toId};
+/**
+ * Pretty print a Map object.
+ *
+ * @param {Map} map
+ */
+const printMap = function(map) {
+    const keys = Array.from(map.keys());
+    const keyLengths = keys.map((key) => key.length);
+    const maxLength = Math.max(...keyLengths);
+    for (const [key, value] of map.entries()) {
+        console.log(`${key.padEnd(maxLength, ' ')}`.green + ' => ' + `${value}`.yellow);
+    }
+};
+
+module.exports = {splitFirst, toId, printMap};

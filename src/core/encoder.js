@@ -112,6 +112,9 @@ class Encoder {
         if (type == null || !(this.dictIds.includes(type))) {
             throw new Error(`Invalid type: ${type}`);
         }
+        if (value != null && !(this.dict[type].has(value))) {
+            throw new Error(`Invalid value ${value} for type ${type}`);
+        }
         const map = new Map();
         for (const category of this.dict[type].keys()) {
             map.set(category, offValue);

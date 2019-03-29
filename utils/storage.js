@@ -1,7 +1,13 @@
 'use strict';
 
-const Tools = require('./battle-dex');
+const Tools = require('../src/tracking/battle-dex');
 
+/**
+ * Convert a team from packed string format to an object.
+ *
+ * @param {string} buf
+ * @return {Object}
+ */
 function unpackTeam(buf) {
     if (!buf) return [];
 
@@ -43,7 +49,7 @@ function unpackTeam(buf) {
         // moves
         j = buf.indexOf('|', i);
         set.moves = buf.substring(i, j).split(',').map(
-            function (moveid) {
+            function(moveid) {
                 return Tools.getMove(moveid).name;
             }
         );
@@ -125,6 +131,4 @@ function unpackTeam(buf) {
     return team;
 }
 
-module.exports = {
-    unpackTeam: unpackTeam
-};
+module.exports = {unpackTeam};
