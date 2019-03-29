@@ -30,7 +30,7 @@ const numEpisodes = 1;
 const maxSteps = 1000;
 
 // agents
-const p1Agent = new TestAgent();
+const p1Agent = new TestAgent('p1');
 const p2Agent = new SemiRandomAgent();
 
 // player specs

@@ -30,10 +30,10 @@ const vocab = {
  */
 class TestAgent extends BaseAgent {
     /**
-     *
+     * @param {string} id
      */
-    constructor() {
-        super();
+    constructor(id) {
+        super(id);
         this.encoder = new Encoder(vocab, 'gen7ou');
     }
 

@@ -5,6 +5,7 @@ const _ = require('underscore');
 const Agent = require('./agent');
 const Battle = require('../tracking/battle');
 const splitFirst = require('../../utils/tools').splitFirst;
+const seedrandom = require('seedrandom');
 
 /**
  * An agent that can keep track of the battle state from its observations.
@@ -17,8 +18,8 @@ class BaseAgent extends Agent {
      */
     constructor(id, seed, debug = false) {
         super();
-        if (id !== 'player1' && id !== 'player2') {
-            throw new Error('invalid player id');
+        if (id !== 'p1' && id !== 'p2') {
+            throw new Error('invalid player id: ' + id);
         }
         this.id = id;
         this.seed = seed;
@@ -135,7 +136,7 @@ class BaseAgent extends Agent {
      * @return {Side}
      */
     getOwnSide() {
-        if (this.id === 'player1') {
+        if (this.id === 'p1') {
             return this._battle.p1;
         }
         return this._battle.p2;
@@ -145,7 +146,7 @@ class BaseAgent extends Agent {
      * @return {Side}
      */
     getOpponentSide() {
-        if (this.id === 'player1') {
+        if (this.id === 'p1') {
             return this._battle.p2;
         }
         return this._battle.p1;
