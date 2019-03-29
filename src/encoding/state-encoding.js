@@ -1,4 +1,5 @@
 const typechart = require('../../Pokemon-Showdown/data/typechart');
+const encoding = require('./one-hot-encoding');
 const abilityCount = 48;
 const abilityMapping = {
     'angerpoint': 0,
@@ -114,7 +115,7 @@ function encodeAccuracy(accuracy) {
  * @return {number[]}
  */
 function encodeType(type) {
-    return createOneHotEncoding(types.indexOf(type), numberOfTypes);
+    return encoding.createOneHotEncoding(types.indexOf(type), numberOfTypes);
 }
 
 /**
@@ -148,18 +149,7 @@ function encodeBoostableStats(pokemon, unboosted, unmodified) {
  * @return {number[]}
  */
 function encodeAbility(ability) {
-    return createOneHotEncoding(abilityMapping[ability], abilityCount);
-}
-
-/**
- * @param {int} position
- * @param {int} length
- * @return {number[]}
- */
-function createOneHotEncoding(position, length) {
-    const oneHotEncoding = new Array(length).fill(0);
-    oneHotEncoding[position] = 1;
-    return oneHotEncoding;
+    return encoding.createOneHotEncoding(abilityMapping[ability], abilityCount);
 }
 
 module.exports = {
@@ -170,5 +160,4 @@ module.exports = {
     encodeBoostableStats,
     encodeMove,
     encodeAbility,
-    createOneHotEncoding,
 };

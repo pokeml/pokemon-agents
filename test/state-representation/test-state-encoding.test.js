@@ -3,10 +3,6 @@ const dexData = require('../../Pokemon-Showdown/sim/dex-data');
 
 
 test('test one hot encoding', () => {
-    expect(encoding.createOneHotEncoding(3, 5)).toEqual([0, 0, 0, 1, 0]);
-});
-
-test('test one hot encoding', () => {
     expect(encoding.encodeAbility('contrary')).toEqual(
         [0, 0, 0, 0, 0, 0, 0, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
             0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0]
