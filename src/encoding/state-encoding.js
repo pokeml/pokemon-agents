@@ -70,7 +70,7 @@ function encodeBattle(battle) {
  * @return {number[]}
  */
 function encodePokemon(pokemon) {
-    let encodedPokemon = [];
+    const encodedPokemon = [];
     return encodedPokemon.concat(encodeAbility(pokemon.ability))
         .concat(encodeAllStats(pokemon));
 }
@@ -92,7 +92,7 @@ function encodeMoves(pokemon) {
  * @return {number[]}
  */
 function encodeMove(move) {
-    let encodedMove = [];
+    const encodedMove = [];
     encodedMove.push(move.basePower, encodeAccuracy(move.accuracy));
     return encodedMove.concat(encodeType(move.type));
 }
@@ -122,7 +122,7 @@ function encodeType(type) {
  * @return {number[]}
  */
 function encodeAllStats(pokemon) {
-    let encodedStats = [];
+    const encodedStats = [];
     return encodedStats.push(pokemon.maxhp)
         .concat(encodeBoostableStats(pokemon, false, false))
         .concat(encodeBoostableStats(pokemon, true, false))
@@ -136,7 +136,7 @@ function encodeAllStats(pokemon) {
  * @return {number[]}
  */
 function encodeBoostableStats(pokemon, unboosted, unmodified) {
-    let encodedStats = [];
+    const encodedStats = [];
     boostableStatNames.forEach(function(statName) {
         encodedStats.push(apokemon.getStat(statName, unboosted, unmodified));
     });
@@ -157,7 +157,7 @@ function encodeAbility(ability) {
  * @return {number[]}
  */
 function createOneHotEncoding(position, length) {
-    let oneHotEncoding = new Array(length).fill(0);
+    const oneHotEncoding = new Array(length).fill(0);
     oneHotEncoding[position] = 1;
     return oneHotEncoding;
 }
