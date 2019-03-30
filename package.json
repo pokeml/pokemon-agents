@@ -17,12 +17,13 @@
   },
   "homepage": "https://github.com/pokeml/pokemon-agents#readme",
   "dependencies": {
-    "@tensorflow/tfjs": "^0.14.1",
     "@tensorflow/tfjs-node": "^0.1.21",
     "npm": "^6.9.0",
     "pokemon-env": "^0.2.3",
+    "reimprovejs": "^0.0.2",
     "seedrandom": "^2.4.4",
-    "underscore": "^1.9.1"
+    "underscore": "^1.9.1",
+    "deasync": "^0.1.14"
   },
   "devDependencies": {
     "eslint": "^5.9.0",
