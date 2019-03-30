@@ -1,40 +1,60 @@
-const encode = require('./one-hot-encoding');
+const PokemonEnvActions = require('pokemon-env/src/actions');
 
 /**
- * Encode an action into a one hot encoding of this action that can be used by rl algorithms
+ * Decode action as returned from reinforcement learning algorithm into Action object
+ * Mapping is this:
  *
- * The one hot encoding is structured in the following way
- * [move1, move2, move3, move4,
- *  switch1, switch2, switch3, switch4, switch5, switch6,
- *  mega-evolve, use z-move]
+ * 0:  move1
+ * 1:  move2
+ * 2:  move3,
+ * 3:  move4,
+ * 4:  move1 mega,
+ * 5:  move2 mega,
+ * 6:  move3 mega,
+ * 7:  move4 mega,
+ * 8:  move1 zmove,
+ * 9:  move2 zmove,
+ * 10: move3 zmove
+ * 11: move4 zmove
+ * 12: switch1,
+ * 13: switch2:
+ * 14: ...
  *
- * @param {Action} action
- * @param {number} teamSize
- * @return {number[]}
+ * @param {int} actionIndex
+ * @return {Action}
  */
-function encodeActions(action, teamSize = 6) {
-    let megaEvolve = 0;
-    let zMove = 0;
-    let encodedAction = [];
-    if (action.type === 'move') {
-        encodedAction = encodedAction.concat(encode.createOneHotEncoding(action.moveNum - 1, 4));
-        megaEvolve = action.mega;
-        zMove = action.zmove;
-    } else {
-        encodedAction = encodedAction.concat(new Array(4).fill(0));
-    }
-    if (action.type === 'switch') {
-        encodedAction = encodedAction.concat(
-            encode.createOneHotEncoding(action.pokeNum - 1, teamSize)
+function decodeAction(actionIndex) {
+    if (actionIndex <= 3) {
+        return new PokemonEnvActions.MoveAction(
+            actionIndex + 1,
+            {
+                mega: 0,
+                zmove: 0,
+            }
+        );
+    } else if (actionIndex <= 7) {
+        return new PokemonEnvActions.MoveAction(
+            actionIndex - 3,
+            {
+                mega: 1,
+                zmove: 0,
+            }
+        );
+    } else if (actionIndex <= 11) {
+        return new PokemonEnvActions.MoveAction(
+            actionIndex - 7,
+            {
+                mega: 0,
+                zmove: 1,
+            }
         );
     } else {
-        encodedAction = encodedAction.concat(new Array(teamSize).fill(0));
+        return new PokemonEnvActions.SwitchAction(
+            actionIndex - 11,
+        );
     }
-    encodedAction = encodedAction.concat([megaEvolve, zMove]);
-
-    return encodedAction;
 }
 
 module.exports = {
-    encodeActions,
+    decodeAction,
 };
