@@ -1,14 +1,14 @@
 'use strict';
 
-const TeamAwareTrackingAgent = require('../core/team-aware-tracking-agent');
-const BattleSim = require('../../Pokemon-Showdown/sim/battle');
+const TeamAwareAgent = require('./team-aware-agent');
+const BattleSim = require('../../Pokemon-Showdown/.sim-dist/battle');
 const teamInference = require('../state-inference/team-inference');
 const storage = require('../tracking/storage');
 
 /**
  * An agent that chooses actions uniformly at random.
  */
-class TeamAwareSimulationAgent extends TeamAwareTrackingAgent {
+class TeamAwareSimulationAgent extends TeamAwareAgent {
     /**
      * @param {'p1' | 'p2'} id
      * @param {object} team
@@ -26,7 +26,7 @@ class TeamAwareSimulationAgent extends TeamAwareTrackingAgent {
      * @override
      */
     act(actionSpace, observation, reward, done) {
-        super.update(observation);
+        super.updateState(observation);
         const state = this.state;
         if (state.request.teamPreview) {
             const teamOpponent = storage.packTeam(
@@ -39,7 +39,7 @@ class TeamAwareSimulationAgent extends TeamAwareTrackingAgent {
                 formatid: this.formatId,
                 seed: this.seed ? Array(4).fill(this.seed) : null,
             };
-            this.simulatedBattle = new BattleSim(battleOptions);
+            this.simulatedBattle = new BattleSim.Battle(battleOptions);
             this.simulatedBattle.setPlayer('p1', {name: 'p1', team: this.team});
             this.simulatedBattle.setPlayer('p2', {name: 'p2', team: teamOpponent});
         }

@@ -11,7 +11,12 @@ class MaxDamageAgent extends TeamAwareSimulationAgent {
      * @override
      */
     act(actionSpace, observation, reward, done) {
-        super.update(observation);
+        super.act(actionSpace, observation, reward, done);
+
+        // simulatedBattle object is only instantiated after team preview
+        if (this.simulatedBattle === null) {
+            return this._sample(actionSpace);
+        }
         let maxDamage = -1;
         let maxDamageIndex = 0;
         const moves = this.getCurrentMoves();
