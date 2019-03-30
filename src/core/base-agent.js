@@ -170,6 +170,16 @@ class BaseAgent extends Agent {
         }
         return active.species;
     }
+
+    /**
+     * Sample a random element from an array.
+     *
+     * @param {Array} arr
+     * @return {Object}
+     */
+    _sample(arr) {
+        return arr[Math.floor(this.random() * arr.length)];
+    }
 }
 
 module.exports = BaseAgent;

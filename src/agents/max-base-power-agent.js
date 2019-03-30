@@ -1,16 +1,22 @@
 'use strict';
 
-const TeamAwareTrackingAgent = require('../core/team-aware-tracking-agent');
+const TeamAwareAgent = require('../core/team-aware-agent');
 
 /**
  * An agent that chooses actions uniformly at random.
  */
-class MaxBasePowerAgent extends TeamAwareTrackingAgent {
+class MaxBasePowerAgent extends TeamAwareAgent {
     /**
      * @override
      */
     act(actionSpace, observation, reward, done) {
-        super.update(observation);
+        super.updateState(observation);
+        super.act(actionSpace, observation, reward, done);
+
+        // simulatedBattle object is only instantiated after team preview
+        if (this.simulatedBattle === null) {
+            return this._sample(actionSpace);
+        }
         let maxBasePower = -1;
         let maxBasePowerIndex = 0;
         const moves = this.getCurrentMoves();

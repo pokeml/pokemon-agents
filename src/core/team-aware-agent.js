@@ -1,12 +1,12 @@
 'use strict';
 
-const TrackingAgent = require('../core/tracking-agent');
+const BaseAgent = require('../core/base-agent');
 const BattleDex = require('../tracking/battle-dex');
 const storage = require('../tracking/storage');
 /**
  * An agent that chooses actions uniformly at random.
  */
-class TeamAwareTrackingAgent extends TrackingAgent {
+class TeamAwareAgent extends BaseAgent {
     /**
      * @param {'p1' | 'p2'} id
      * @param {number} [seed]
@@ -40,4 +40,4 @@ class TeamAwareTrackingAgent extends TrackingAgent {
     }
 }
 
-module.exports = TeamAwareTrackingAgent;
+module.exports = TeamAwareAgent;
