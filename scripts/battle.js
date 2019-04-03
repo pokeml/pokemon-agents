@@ -83,18 +83,18 @@ for (let episode = 1; episode <= numEpisodes; episode++) {
         ({observations, rewards, done} = env.step(actions));
 
         // logging
-        if (config.logTime) {
-            console.log(`Time: ${t}`);
-        }
-        if (config.logObservations) {
-            console.log(`${observations[0]}`.gray);
-        }
-        if (config.logP1State) {
-            console.log(util.inspect(p1Agent.state, config.stateDisplay));
-        }
-        if (config.logP2State) {
-            console.log(util.inspect(p2Agent.state, config.stateDisplay));
-        }
+        // if (config.logTime) {
+        //     console.log(`Time: ${t}`);
+        // }
+        // if (config.logObservations) {
+        //     console.log(`${observations[0]}`.gray);
+        // }
+        // if (config.logP1State) {
+        //     console.log(util.inspect(p1Agent.state, config.stateDisplay));
+        // }
+        // if (config.logP2State) {
+        //     console.log(util.inspect(p2Agent.state, config.stateDisplay));
+        // }
 
         if (done) {
             results.p1Wins += rewards[0] === 1;
