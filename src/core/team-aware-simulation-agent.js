@@ -1,7 +1,7 @@
 'use strict';
 
 const TeamAwareAgent = require('./team-aware-agent');
-const BattleSim = require('../../Pokemon-Showdown/.sim-dist/battle');
+const Battle = require('../../Pokemon-Showdown/sim/battle');
 const teamInference = require('../state-inference/team-inference');
 const storage = require('../tracking/storage');
 
@@ -39,7 +39,7 @@ class TeamAwareSimulationAgent extends TeamAwareAgent {
                 formatid: this.formatId,
                 seed: this.seed ? Array(4).fill(this.seed) : null,
             };
-            this.simulatedBattle = new BattleSim.Battle(battleOptions);
+            this.simulatedBattle = new Battle(battleOptions);
             this.simulatedBattle.setPlayer('p1', {name: 'p1', team: this.team});
             this.simulatedBattle.setPlayer('p2', {name: 'p2', team: teamOpponent});
         }
