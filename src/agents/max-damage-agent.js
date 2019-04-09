@@ -32,7 +32,7 @@ class MaxDamageAgent extends TeamAwareSimulationAgent {
                 maxDamageIndex = i;
             }
         }
-        if (typeof actionSpace[maxDamageIndex] !== undefined) {
+        if (actionSpace[maxDamageIndex] !== undefined) {
             return actionSpace[maxDamageIndex];
         }
         return this._sample(actionSpace);
