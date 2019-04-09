@@ -26,7 +26,7 @@ class SimAgent extends Agent {
      * @override
      */
     act(actionSpace, observation, reward, done) {
-        if (actionSpace.length == 0) {
+        if (actionSpace.length === 0) {
             return null;
         }
         const actions = this._getActionSpace(observation);
@@ -111,6 +111,9 @@ class SimAgent extends Agent {
             }
         }
 
+        console.log(`Payoff matrix:`);
+        this._printMatrix(matrix);
+        console.log(`---`);
         console.log(`Value: ${value}`);
         console.log(`---`);
         console.log(`Player 1's strategy:`);
@@ -330,6 +333,19 @@ class SimAgent extends Agent {
             weights[`p2_pkmn${i + 1}_hp`] = -1;
         }
         return weights;
+    }
+
+    /**
+     * @param {Array} matrix
+     */
+    _printMatrix(matrix) {
+        for (const row of matrix) {
+            const r = [];
+            for (const val of row) {
+                r.push(val.toFixed(2));
+            }
+            console.log(r.join('\t'));
+        }
     }
 }
 
