@@ -1,7 +1,12 @@
 'use strict';
 
+const execSync = require('child_process').execSync;
+const fs = require('fs');
+const sys = require('sys');
+
 const _ = require('lodash');
 const seedrandom = require('seedrandom');
+
 const {MoveAction, SwitchAction, TeamAction} = require('./actions');
 const Agent = require('../core/agent');
 
@@ -23,10 +28,13 @@ class SimAgent extends Agent {
      */
     act(actionSpace, observation, reward, done) {
         const actions = this._getActionSpace(observation);
-        let count = 1;
+        let game = `${actions[0].length} ${actions[1].length}\n\n`;
+        const matrix = [];
+        let simCount = 1;
         for (const p1Action of actions[0]) {
+            const row = [];
             for (const p2Action of actions[1]) {
-                console.log(`Sim #${count++}`);
+                console.log(`Sim #${simCount++}`);
 
                 const battle = _.cloneDeep(observation);
                 battle.choose('p1', p1Action.choice);
@@ -38,9 +46,44 @@ class SimAgent extends Agent {
                 for (const key of Object.keys(features)) {
                     value += features[key] * weights[key];
                 }
-                console.log(`Value: ${value}`);
+                row.push(value);
             }
+            matrix.push(row);
         }
+
+        const n = 5;
+        for (const row of matrix) {
+            const r = [];
+            for (const value of row) {
+                const a = Math.pow(10, n);
+                const v = `${Math.round(a * value)}/${a}`;
+                r.push(v);
+            }
+            game += r.join(' ');
+            game += '\n';
+        }
+        game += '\n';
+        for (const row of matrix) {
+            const r = [];
+            for (const value of row) {
+                const a = Math.pow(10, n);
+                const v = `${-Math.round(a * value)}/${a}`;
+                r.push(v);
+            }
+            game += r.join(' ');
+            game += '\n';
+        }
+
+        const dir = '/tmp/pkmn';
+        const file = `${dir}/game.txt`;
+        if (!fs.existsSync(dir)) {
+            fs.mkdirSync(dir, {'recursive': true});
+        }
+        fs.writeFileSync(file, game);
+
+        const output = execSync(`./lib/lrsnash ${file}`).toString();
+        console.log(output);
+
         return this._sample(actionSpace);
     }
 
