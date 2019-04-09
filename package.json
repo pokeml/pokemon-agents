@@ -19,8 +19,9 @@
   "dependencies": {
     "@tensorflow/tfjs": "^0.14.1",
     "@tensorflow/tfjs-node": "^0.1.21",
+    "lodash": "^4.17.11",
     "npm": "^6.9.0",
-    "pokemon-env": "^0.2.3",
+    "pokemon-env": "file:../pokemon-env",
     "seedrandom": "^2.4.4",
     "underscore": "^1.9.1"
   },
