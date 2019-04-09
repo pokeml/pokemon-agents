@@ -21,7 +21,7 @@
     "@tensorflow/tfjs-node": "^0.1.21",
     "lodash": "^4.17.11",
     "npm": "^6.9.0",
-    "pokemon-env": "file:../pokemon-env",
+    "pokemon-env": "^0.2.5",
     "seedrandom": "^2.4.4",
     "underscore": "^1.9.1"
   },

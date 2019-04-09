@@ -2,7 +2,6 @@
 
 const execSync = require('child_process').execSync;
 const fs = require('fs');
-const sys = require('sys');
 
 const _ = require('lodash');
 const seedrandom = require('seedrandom');
@@ -27,16 +26,21 @@ class SimAgent extends Agent {
      * @override
      */
     act(actionSpace, observation, reward, done) {
+        if (actionSpace.length == 0) {
+            return null;
+        }
         const actions = this._getActionSpace(observation);
         let game = `${actions[0].length} ${actions[1].length}\n\n`;
         const matrix = [];
-        let simCount = 1;
+        // let simCount = 1;
+        const startTime = new Date();
         for (const p1Action of actions[0]) {
             const row = [];
             for (const p2Action of actions[1]) {
-                console.log(`Sim #${simCount++}`);
+                // console.log(`Sim #${simCount++}`);
 
                 const battle = _.cloneDeep(observation);
+
                 battle.choose('p1', p1Action.choice);
                 battle.choose('p2', p2Action.choice);
 
@@ -50,6 +54,9 @@ class SimAgent extends Agent {
             }
             matrix.push(row);
         }
+        const endTime = new Date();
+        const deltaTime = (endTime - startTime) / 1000;
+        console.log(`Simulation time: ${deltaTime}s`);
 
         const n = 5;
         for (const row of matrix) {
@@ -82,9 +89,41 @@ class SimAgent extends Agent {
         fs.writeFileSync(file, game);
 
         const output = execSync(`./lib/lrsnash ${file}`).toString();
-        console.log(output);
 
-        return this._sample(actionSpace);
+        let value;
+        let p1Strategy;
+        let p2Strategy;
+        for (const line of output.split('\n')) {
+            if ((line.startsWith('1') && !p1Strategy) || (line.startsWith('2') && !p2Strategy)) {
+                const parts = line.trim().split(/ +/);
+                const strategy = [];
+                for (let i = 1; i < parts.length - 1; i++) {
+                    strategy.push(eval(parts[i]));
+                }
+                if (line.startsWith('1')) {
+                    p1Strategy = strategy;
+                } else {
+                    p2Strategy = strategy;
+                }
+                if (!value) {
+                    value = eval(parts[parts.length - 1]);
+                }
+            }
+        }
+
+        console.log(`Value: ${value}`);
+        console.log(`---`);
+        console.log(`Player 1's strategy:`);
+        for (let i = 0; i < actionSpace.length; i++) {
+            console.log(`${actionSpace[i]}: ${p1Strategy[i]}`);
+        }
+        console.log(`---`);
+        console.log(`Player 2's strategy:`);
+        for (let i = 0; i < actions[1].length; i++) {
+            console.log(`${actions[1][i]}: ${p2Strategy[i]}`);
+        }
+
+        return this._sample(actionSpace, p1Strategy);
     }
 
     /**
@@ -95,13 +134,24 @@ class SimAgent extends Agent {
     }
 
     /**
-     * Sample a random element from an array.
+     * Sample a random element from an array according to a weighted probability
+     * distribution.
      *
      * @param {Array} arr
+     * @param {Array} probs
      * @return {Object}
      */
-    _sample(arr) {
-        return arr[Math.floor(this.random() * arr.length)];
+    _sample(arr, probs) {
+        const sum = probs.reduce((a, b) => a + b, 0);
+        const norm = probs.map((prob) => prob / sum);
+        const sample = this.random();
+        let total = 0;
+        for (let i = 0; i < norm.length; i++) {
+            total += norm[i];
+            if (sample < total) {
+                return arr[i];
+            }
+        }
     }
 
     /**
